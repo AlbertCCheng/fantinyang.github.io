@@ -3,22 +3,26 @@
 <head>
   <meta charset="utf-8">
   
-  <title>FantinOcean</title>
+  <title>start with openwrt | FantinOcean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
   
   
   
-  <meta name="description" content="Have a nice day!">
-<meta property="og:type" content="website">
-<meta property="og:title" content="FantinOcean">
-<meta property="og:url" content="https://fantinyang.github.io/index.html">
+  <meta name="description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Start With OpenWrt">
+<meta property="og:url" content="https://fantinyang.github.io/2018/05/12/post2/index.html">
 <meta property="og:site_name" content="FantinOcean">
-<meta property="og:description" content="Have a nice day!">
+<meta property="og:description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/20140417175607_4955.png">
+<meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/Screen%20Shot%202018-05-12%20at%2012.41.04%20PM.png">
+<meta property="og:updated_time" content="2018-05-12T04:55:30.731Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="FantinOcean">
-<meta name="twitter:description" content="Have a nice day!">
+<meta name="twitter:title" content="Start With OpenWrt">
+<meta name="twitter:description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
+<meta name="twitter:image" content="https://fantinyang.github.io/Users/fantin/Desktop/20140417175607_4955.png">
   
     <link rel="alternate" href="/atom.xml" title="FantinOcean" type="application/atom+xml">
   
@@ -47,11 +51,13 @@
   <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/home.css" >
+    <link rel="stylesheet" href="/css/dialog.css">
   
 
   
 
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
   
 
   
@@ -64,142 +70,107 @@
 
 
 
-  <body>
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
 
 
-  
-    <header id="header">
-
-	<!-- 背景图模式 -->
-	
-
-    
-      <div id="intrologo" class="intro-logo">
-    
- 
-
-
-    <canvas width="100%" height="100%"></canvas>
-    <script>
-      var c = document.getElementsByTagName('canvas')[0],
-          x = c.getContext('2d'),
-          w = window.innerWidth,
-          h = window.innerHeight,
-          pr = window.devicePixelRatio || 1,
-          f = 90,
-          q,
-          m = Math,
-          r = 0,
-          u = m.PI*2,
-          v = m.cos,
-          z = m.random
-      c.width = w*pr
-      c.height = h*pr
-      x.scale(pr, pr)
-      x.globalAlpha = 0.6
-
-      <!-- 折线Polyline背景 -->
-      
-        function i(){
-            x.clearRect(0,0,w,h)
-            q=[{x:0,y:h*.7+f},{x:0,y:h*.7-f}]
-            while(q[1].x<w+f) d(q[0], q[1])
-        }
-        function d(i,j){   
-            x.beginPath()
-            x.moveTo(i.x, i.y)
-            x.lineTo(j.x, j.y)
-            var k = j.x + (z()*2-0.25)*f,
-                n = y(j.y)
-            x.lineTo(k, n)
-            x.closePath()
-            r-=u/-50
-            x.fillStyle = '#'+(v(r)*127+128<<16 | v(r+u/3)*127+128<<8 | v(r+u/3*2)*127+128).toString(16)
-            x.fill()
-            q[0] = q[1]
-            q[1] = {x:k,y:n}
-        }
-        function y(p){
-            var t = p + (z()*2-1.1)*f
-            return (t>h||t<0) ? y(p) : t
-        }
-        document.getElementById("intrologo").onclick = i
-        document.getElementById("intrologo").ontouchstart = i
-        i()
-
-      <!-- 多边形trianglify背景 -->
-      
-    </script>
-    
-
-    
-      <div id="homelogo" class="homelogo"> 
-    
-
-        
-          <div class="homelogoback" >
-            <h1><a href="#content" id="logo">FantinOcean</a></h1>
-            <h3>Have a nice day!</h3>
-            <h5>Fantin</h5>
-            <!-- <p><a href="https://github.com/iTimeTraveler" target="_blank">Github</a></p> -->
-          </div>
-        
-    
-    </div>
-  </div>
-
-  <!-- 自适应主页背景大图 -->
-  
-
- <!-- home_logo_image居中 -->
- 
-    <script>
-        var homelogodiv = document.getElementById("homelogo");
-        if (document.all.homelogo.offsetWidth > document.body.clientWidth) {
-          homelogodiv.style.width = document.body.clientWidth + "px";
-          homelogodiv.style.marginLeft = document.body.clientWidth * -0.5 + "px";
-        } else {
-          homelogodiv.style.width = homelogodiv.clientWidth  + "px";
-          homelogodiv.style.marginLeft = (homelogodiv.clientWidth)  * -0.5 + "px";
-        }
-    </script>
-  
-
-  <div class="intro-navigate">
-      <p class="navigater-list">
-        
-          <a id="beautifont" class="main-nav-link" href="/">Home</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/archives">Archives</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/categories">Categories</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/tags">Tags</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/about">About</a>
-        
-      </p>
-  </div>
-
-</header>
   
   <div id="container">
     <div id="wrap">
       
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="/css/images/mylogo.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">Home</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">Archives</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">Categories</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">Tags</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">About</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
             
       <div id="content" class="outer">
         
-          <section id="main" style="float:none;">
-  
-    <article id="post-post2"  class="article article-type-post" itemscope itemprop="blogPost" >
+          <section id="main" style="float:none;"><article id="post-post2" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="article-inner">
     
     
       <header class="article-header">
         
   
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/12/post2/">Start With OpenWrt</a>
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Start With OpenWrt
     </h1>
   
 
@@ -213,6 +184,12 @@
 
       
       
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		PV:<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
     </div>
     <div class="article-entry" itemprop="articleBody">
       
@@ -261,74 +238,76 @@
     </div>
     <footer class="article-footer">
       
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: 'There is no need for donation, but thank you', // 可选参数，打赏标题
+  btnText: 'Donate', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: '',
+  alipayImage: ''
+});
+</script>
       
       
-    </footer>
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-post1"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="article-inner">
-    
-    
-      <header class="article-header">
         
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/11/post1/">To Visiters</a>
-    </h1>
-  
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
 
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2018/05/11/post1/" class="article-date">
-	  <time datetime="2018-05-11T11:52:05.000Z" itemprop="datePublished">2018-05-11</time>
-	</a>
+		       if (typeof LivereTower === 'function') { return; }
 
-      
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="My-very-first-post-–-To-Visiters"><a href="#My-very-first-post-–-To-Visiters" class="headerlink" title="My very first post – To Visiters"></a>My very first post – To Visiters</h1><h3 id="Who-Am-I"><a href="#Who-Am-I" class="headerlink" title="Who Am I"></a>Who Am I</h3><p> You can find me in…</p>
-<ul>
-<li><a href="https://www.facebook.com/profile.php?id=100010334744185" target="_blank" rel="noopener">Facebook</a> </li>
-<li><a href="https://twitter.com/yangfantin" target="_blank" rel="noopener">Twitter</a></li>
-<li><a href="https://www.instagram.com/yangfantin/" target="_blank" rel="noopener">Instagram</a></li>
-<li><a href="https://weibo.com/y526147723/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo" target="_blank" rel="noopener">Weibo</a></li>
-<li><a href="https://space.bilibili.com/7781422/#/" target="_blank" rel="noopener">Bilibili</a> </li>
-<li><a href="yangfan.gm@gmail.com">Email</a>  </li>
-</ul>
-<p><strong>Facebook</strong>, <strong>Twitter</strong>, <strong>Insta</strong>, and <strong>Weibo</strong> are set up only as my social media, you can follow me if interested, but I won’t guarantee the quality.<br><strong>Bilibili</strong> is where I upload my Vlogs.<br>In the end, don’t hesitate to <strong>Email</strong> me.</p>
-<h3 id="What-I-gonna-do"><a href="#What-I-gonna-do" class="headerlink" title="What I gonna do"></a>What I gonna do</h3><p>The reason why I set up this blog is that I want to share my working experience with freshmen in SDN, Wireless Security, OpenWrt and so on. Because when I first stepped foot in these areas, I couldn’t always find the useful information online. There full of repeated tutorials and blogs, and what important is that most of the tutorials are not suitable for freshmen in engineering, because they assume the readers have equipped enough basic knowledge.<br>So I decided to share the journey of me on this blog, where I will focus more on how to start up the engineering and how to get useful information.<br>Hope it will be helpful to you.</p>
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
 
-      
-    </div>
-    <footer class="article-footer">
-      
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+
       
       
     </footer>
   </div>
   
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/05/11/post1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">To Visiters</div>
+    </a>
+  
+</nav>
+
+  
 </article>
 
 <!-- Table of Contents -->
 
-  
-
-
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Start-With-OpenWrt"><span class="nav-number">1.</span> <span class="nav-text">Start With OpenWrt</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#从挑选路由器到刷机"><span class="nav-number">1.1.</span> <span class="nav-text">从挑选路由器到刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择路由器"><span class="nav-number">1.1.1.</span> <span class="nav-text">选择路由器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器刷机"><span class="nav-number">1.1.2.</span> <span class="nav-text">路由器刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网页法"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">网页法</span></a></li></ol></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
 </section>
         
       </div>
-      
-        <div align="center" style="margin-top: 30px;"><hr class="hr" style="margin:0px; height:3px;"></div>
       
       <footer id="footer">
   
@@ -420,9 +399,9 @@
 <script src="/js/scripts.js"></script>
 
 
-  <script src="/js/home.js"></script>
 
 
+  <script src="/js/dialog.js"></script>
 
 
 
@@ -507,6 +486,8 @@
   
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
   
 </body>
 </html>
