@@ -6,10 +6,13 @@
   <title>start with openwrt | FantinOcean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
+  <meta name="keywords" content="Openwrt" />
+  
   
   
   
   <meta name="description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
+<meta name="keywords" content="Openwrt">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Start With OpenWrt">
 <meta property="og:url" content="https://fantinyang.github.io/2018/05/12/post2/index.html">
@@ -18,7 +21,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/20140417175607_4955.png">
 <meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/Screen%20Shot%202018-05-12%20at%2012.41.04%20PM.png">
-<meta property="og:updated_time" content="2018-05-12T04:55:30.731Z">
+<meta property="og:updated_time" content="2018-05-12T05:19:36.730Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Start With OpenWrt">
 <meta name="twitter:description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
@@ -197,14 +200,14 @@
 <hr>
 <h3 id="选择路由器"><a href="#选择路由器" class="headerlink" title="选择路由器"></a>选择路由器</h3><p>首先，选择路由器基本可以遵循以下步骤：</p>
 <ul>
-<li>选择一个路由器品牌（D-Link，TP-Link等），在网上查询现有售卖的型号。</li>
+<li>选择一个路由器<strong>品牌(Brand)</strong>（D-Link，TP-Link等），在网上查询现有售卖的<strong>型号(Model)</strong>。</li>
 <li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上寻找市面上还能买到的路由器。</li>
-<li>进入对应路由器wiki页面，查看Openwrt支持的版本号。</li>
+<li>进入对应路由器wiki页面，查看Openwrt支持的<strong>版本号(Version)</strong>。</li>
 <li>向卖家确认路由器版本号。</li>
 </ul>
 <p>到这里都没有碰壁，只能说你非常幸运。因为通过正规渠道有售的路由器在Openwrt上能找到的就已经不多，其次即使找到了相同的型号，市面上的路由器版本也往往太新，而Openwrt没有release新版本的固件。</p>
 <p>这里需要特别注意的是，旧版本一般不能适配新版本，虽然他们的型号一样，但是不同版本之间的硬件设置不同。而且，同一个版本的海内外产品也有区别。</p>
-<p>还要说明的是，OpenWrt是国外的平台，而路由器厂商针对中国市场和海外市场对同一款路由器有不同版本的配置。一般而言，海外版本的路由器更适合搭载Openwrt系统，因为他们往往拥有更大的Flash内存。国内的新路由器一般只配置4M的Flash内存（有的甚至只有2M），基本只够勉强塞入固件系统，更别提承载其他配置。</p>
+<p>还要说明的是，OpenWrt是国外的平台，而路由器厂商针对中国市场和海外市场对同一款路由器有不同版本的配置。一般而言，海外版本的路由器更适合搭载Openwrt系统，因为他们往往拥有更大的Flash内存。国内的新路由器一般只配置4M的Flash内存（有的甚至只有2M），基本只够勉强塞入固件系统（3.8M），更别提承载其他配置。</p>
 <p>所以我的经验是，通过正规渠道一般已经没有办法购买到合适的路由器了，就算真的购买到了，后续可能也需要对路由器的Flash和RAM进行扩容。嫌麻烦的人其实可以直接上淘宝买个改装好的路由器，有工程追求的人请参见以下几篇硬改教程：</p>
 <ul>
 <li><a href="https://blog.csdn.net/aggresss/article/details/52753098" target="_blank" rel="noopener">aggresss的专栏</a></li>
@@ -278,6 +281,8 @@ var a = new Donate({
 
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Openwrt/">Openwrt</a></li></ul>
+
     </footer>
   </div>
   

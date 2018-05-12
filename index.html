@@ -191,86 +191,6 @@
         
           <section id="main" style="float:none;">
   
-    <article id="post-post2"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/12/post2/">Start With OpenWrt</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2018/05/12/post2/" class="article-date">
-	  <time datetime="2018-05-12T04:53:08.000Z" itemprop="datePublished">2018-05-12</time>
-	</a>
-
-      
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Start-With-OpenWrt"><a href="#Start-With-OpenWrt" class="headerlink" title="Start With OpenWrt"></a>Start With OpenWrt</h1><h2 id="从挑选路由器到刷机"><a href="#从挑选路由器到刷机" class="headerlink" title="从挑选路由器到刷机"></a>从挑选路由器到刷机</h2><p>不管你的用途是什么，只要涉及自定义路由器，<a href="https://openwrt.org/" target="_blank" rel="noopener">Openwrt</a>是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。</p>
-<hr>
-<h3 id="选择路由器"><a href="#选择路由器" class="headerlink" title="选择路由器"></a>选择路由器</h3><p>首先，选择路由器基本可以遵循以下步骤：</p>
-<ul>
-<li>选择一个路由器品牌（D-Link，TP-Link等），在网上查询现有售卖的型号。</li>
-<li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上寻找市面上还能买到的路由器。</li>
-<li>进入对应路由器wiki页面，查看Openwrt支持的版本号。</li>
-<li>向卖家确认路由器版本号。</li>
-</ul>
-<p>到这里都没有碰壁，只能说你非常幸运。因为通过正规渠道有售的路由器在Openwrt上能找到的就已经不多，其次即使找到了相同的型号，市面上的路由器版本也往往太新，而Openwrt没有release新版本的固件。</p>
-<p>这里需要特别注意的是，旧版本一般不能适配新版本，虽然他们的型号一样，但是不同版本之间的硬件设置不同。而且，同一个版本的海内外产品也有区别。</p>
-<p>还要说明的是，OpenWrt是国外的平台，而路由器厂商针对中国市场和海外市场对同一款路由器有不同版本的配置。一般而言，海外版本的路由器更适合搭载Openwrt系统，因为他们往往拥有更大的Flash内存。国内的新路由器一般只配置4M的Flash内存（有的甚至只有2M），基本只够勉强塞入固件系统，更别提承载其他配置。</p>
-<p>所以我的经验是，通过正规渠道一般已经没有办法购买到合适的路由器了，就算真的购买到了，后续可能也需要对路由器的Flash和RAM进行扩容。嫌麻烦的人其实可以直接上淘宝买个改装好的路由器，有工程追求的人请参见以下几篇硬改教程：</p>
-<ul>
-<li><a href="https://blog.csdn.net/aggresss/article/details/52753098" target="_blank" rel="noopener">aggresss的专栏</a></li>
-<li><a href="https://my.oschina.net/osbin/blog/282141" target="_blank" rel="noopener">TP-LINK 845N V1硬改</a></li>
-<li><a href="https://blog.csdn.net/flyingcys/article/details/54671532" target="_blank" rel="noopener">TP-LINK_841N_V8路由器</a> （好文！）</li>
-</ul>
-<hr>
-<h3 id="路由器刷机"><a href="#路由器刷机" class="headerlink" title="路由器刷机"></a>路由器刷机</h3><p>现在，你有了一个可以刷Openwrt官方固件的路由器，但是我们默认路由器内置的固件还是运营商提供的。所以这一步讲的是如何将固件刷成Openwrt，难度从低到高有三种：</p>
-<ul>
-<li>网页法</li>
-<li>TFTP法</li>
-<li>TTL法</li>
-</ul>
-<p>在开始刷机之前，要先对路由器的结构有个基本的认识。路由器上的网线接口一般有1个WAN口，和多个LAN口，一般有不同的颜色和标识。</p>
-<p><img src="/Users/fantin/Desktop/20140417175607_4955.png" alt="路由器网口标识"></p>
-<p>除此之外，还有一个电源接口和一个小小的reset孔（一般而言reset孔在里面，要用牙签或者针头戳进去）。</p>
-<h4 id="网页法"><a href="#网页法" class="headerlink" title="网页法"></a>网页法</h4><p>首先在路由器的Openwrt Wiki 页面里找到官方的release版本，下载到本地。注意区分Install Image和Update Image，这里我们选择Install Image，文件后缀是<strong>squashfs-factory.bin</strong>。</p>
-<p><img src="/Users/fantin/Desktop/Screen Shot 2018-05-12 at 12.41.04 PM.png" alt="下载镜像和更新镜像"></p>
-<p>然后，将路由器断电，将LAN1口用网线与电脑连接，然后摁住reset按钮，同时接通电源。</p>
-<p>观察路由器的亮灯情况，一般要维持10s左右，亮灯状态维持稳定时，松开reset按钮。因为不同的路由器亮灯情况不同，如果不放心可以直接搜索 路由器型号+刷机 ，找到教程看具体的状态。</p>
-<p>从路由器背面查看ip地址，一般为：192.168.1.1，从网页输入ip地址登录。（账号密码信息也会在路由器背面贴出，一般默认是 admin ，如果没有可以上路由器官网查看。）</p>
-<p>进入页面后，选择软件升级，然后添加刚刚下载的 <strong>.bin</strong> 文件，点击更新即可。<strong>注意过程中保持电源通电，等待路由器重启成功。</strong> </p>
-<p>通过网页的方式非常简单，但是也经常失败，如果不成功可以尝试：</p>
-<ul>
-<li>关闭电脑防火墙</li>
-<li>查看版本号是否对应</li>
-</ul>
-<p>路由器运营商也可能会针对网页刷机做一些屏蔽，所以网页刷机往往成功率不高。如果失败了，可以继续尝试用TFTP方式刷机。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
     <article id="post-post1"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="article-inner">
     
@@ -314,6 +234,90 @@
       
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Others/">Others</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-post2"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2018/05/12/post2/">Start With OpenWrt</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/05/12/post2/" class="article-date">
+	  <time datetime="2018-05-12T04:53:08.000Z" itemprop="datePublished">2018-05-12</time>
+	</a>
+
+      
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Start-With-OpenWrt"><a href="#Start-With-OpenWrt" class="headerlink" title="Start With OpenWrt"></a>Start With OpenWrt</h1><h2 id="从挑选路由器到刷机"><a href="#从挑选路由器到刷机" class="headerlink" title="从挑选路由器到刷机"></a>从挑选路由器到刷机</h2><p>不管你的用途是什么，只要涉及自定义路由器，<a href="https://openwrt.org/" target="_blank" rel="noopener">Openwrt</a>是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。</p>
+<hr>
+<h3 id="选择路由器"><a href="#选择路由器" class="headerlink" title="选择路由器"></a>选择路由器</h3><p>首先，选择路由器基本可以遵循以下步骤：</p>
+<ul>
+<li>选择一个路由器<strong>品牌(Brand)</strong>（D-Link，TP-Link等），在网上查询现有售卖的<strong>型号(Model)</strong>。</li>
+<li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上寻找市面上还能买到的路由器。</li>
+<li>进入对应路由器wiki页面，查看Openwrt支持的<strong>版本号(Version)</strong>。</li>
+<li>向卖家确认路由器版本号。</li>
+</ul>
+<p>到这里都没有碰壁，只能说你非常幸运。因为通过正规渠道有售的路由器在Openwrt上能找到的就已经不多，其次即使找到了相同的型号，市面上的路由器版本也往往太新，而Openwrt没有release新版本的固件。</p>
+<p>这里需要特别注意的是，旧版本一般不能适配新版本，虽然他们的型号一样，但是不同版本之间的硬件设置不同。而且，同一个版本的海内外产品也有区别。</p>
+<p>还要说明的是，OpenWrt是国外的平台，而路由器厂商针对中国市场和海外市场对同一款路由器有不同版本的配置。一般而言，海外版本的路由器更适合搭载Openwrt系统，因为他们往往拥有更大的Flash内存。国内的新路由器一般只配置4M的Flash内存（有的甚至只有2M），基本只够勉强塞入固件系统（3.8M），更别提承载其他配置。</p>
+<p>所以我的经验是，通过正规渠道一般已经没有办法购买到合适的路由器了，就算真的购买到了，后续可能也需要对路由器的Flash和RAM进行扩容。嫌麻烦的人其实可以直接上淘宝买个改装好的路由器，有工程追求的人请参见以下几篇硬改教程：</p>
+<ul>
+<li><a href="https://blog.csdn.net/aggresss/article/details/52753098" target="_blank" rel="noopener">aggresss的专栏</a></li>
+<li><a href="https://my.oschina.net/osbin/blog/282141" target="_blank" rel="noopener">TP-LINK 845N V1硬改</a></li>
+<li><a href="https://blog.csdn.net/flyingcys/article/details/54671532" target="_blank" rel="noopener">TP-LINK_841N_V8路由器</a> （好文！）</li>
+</ul>
+<hr>
+<h3 id="路由器刷机"><a href="#路由器刷机" class="headerlink" title="路由器刷机"></a>路由器刷机</h3><p>现在，你有了一个可以刷Openwrt官方固件的路由器，但是我们默认路由器内置的固件还是运营商提供的。所以这一步讲的是如何将固件刷成Openwrt，难度从低到高有三种：</p>
+<ul>
+<li>网页法</li>
+<li>TFTP法</li>
+<li>TTL法</li>
+</ul>
+<p>在开始刷机之前，要先对路由器的结构有个基本的认识。路由器上的网线接口一般有1个WAN口，和多个LAN口，一般有不同的颜色和标识。</p>
+<p><img src="/Users/fantin/Desktop/20140417175607_4955.png" alt="路由器网口标识"></p>
+<p>除此之外，还有一个电源接口和一个小小的reset孔（一般而言reset孔在里面，要用牙签或者针头戳进去）。</p>
+<h4 id="网页法"><a href="#网页法" class="headerlink" title="网页法"></a>网页法</h4><p>首先在路由器的Openwrt Wiki 页面里找到官方的release版本，下载到本地。注意区分Install Image和Update Image，这里我们选择Install Image，文件后缀是<strong>squashfs-factory.bin</strong>。</p>
+<p><img src="/Users/fantin/Desktop/Screen Shot 2018-05-12 at 12.41.04 PM.png" alt="下载镜像和更新镜像"></p>
+<p>然后，将路由器断电，将LAN1口用网线与电脑连接，然后摁住reset按钮，同时接通电源。</p>
+<p>观察路由器的亮灯情况，一般要维持10s左右，亮灯状态维持稳定时，松开reset按钮。因为不同的路由器亮灯情况不同，如果不放心可以直接搜索 路由器型号+刷机 ，找到教程看具体的状态。</p>
+<p>从路由器背面查看ip地址，一般为：192.168.1.1，从网页输入ip地址登录。（账号密码信息也会在路由器背面贴出，一般默认是 admin ，如果没有可以上路由器官网查看。）</p>
+<p>进入页面后，选择软件升级，然后添加刚刚下载的 <strong>.bin</strong> 文件，点击更新即可。<strong>注意过程中保持电源通电，等待路由器重启成功。</strong> </p>
+<p>通过网页的方式非常简单，但是也经常失败，如果不成功可以尝试：</p>
+<ul>
+<li>关闭电脑防火墙</li>
+<li>查看版本号是否对应</li>
+</ul>
+<p>路由器运营商也可能会针对网页刷机做一些屏蔽，所以网页刷机往往成功率不高。如果失败了，可以继续尝试用TFTP方式刷机。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Openwrt/">Openwrt</a></li></ul>
+
     </footer>
   </div>
   
