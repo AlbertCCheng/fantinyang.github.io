@@ -19,13 +19,13 @@
 <meta property="og:site_name" content="FantinOcean">
 <meta property="og:description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/20140417175607_4955.png">
-<meta property="og:image" content="https://fantinyang.github.io/Users/fantin/Desktop/Screen%20Shot%202018-05-12%20at%2012.41.04%20PM.png">
-<meta property="og:updated_time" content="2018-05-12T05:19:36.730Z">
+<meta property="og:image" content="https://fantinyang.github.io/blog/source/_posts/post2/Screen%20Shot%202018-05-12%20at%2012.41.04%20PM.png">
+<meta property="og:image" content="https://fantinyang.github.io/blog/source/_posts/post2/20140417175607_4955.png">
+<meta property="og:updated_time" content="2018-05-13T02:20:29.495Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Start With OpenWrt">
 <meta name="twitter:description" content="Start With OpenWrt从挑选路由器到刷机不管你的用途是什么，只要涉及自定义路由器，Openwrt是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。  选择路由器首先，选择路由器基本可以遵循以下步骤：  选择一">
-<meta name="twitter:image" content="https://fantinyang.github.io/Users/fantin/Desktop/20140417175607_4955.png">
+<meta name="twitter:image" content="https://fantinyang.github.io/blog/source/_posts/post2/Screen%20Shot%202018-05-12%20at%2012.41.04%20PM.png">
   
     <link rel="alternate" href="/atom.xml" title="FantinOcean" type="application/atom+xml">
   
@@ -201,8 +201,8 @@
 <h3 id="选择路由器"><a href="#选择路由器" class="headerlink" title="选择路由器"></a>选择路由器</h3><p>首先，选择路由器基本可以遵循以下步骤：</p>
 <ul>
 <li>选择一个路由器<strong>品牌(Brand)</strong>（D-Link，TP-Link等），在网上查询现有售卖的<strong>型号(Model)</strong>。</li>
-<li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上寻找市面上还能买到的路由器。</li>
-<li>进入对应路由器wiki页面，查看Openwrt支持的<strong>版本号(Version)</strong>。</li>
+<li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上选择品牌和型号，与市面上还能买到的路由器对应查看，选择一款能够买到的。</li>
+<li>进入对应路由器wiki页面，查看Openwrt官方固件出的<strong>版本号(Version)</strong>。</li>
 <li>向卖家确认路由器版本号。</li>
 </ul>
 <p>到这里都没有碰壁，只能说你非常幸运。因为通过正规渠道有售的路由器在Openwrt上能找到的就已经不多，其次即使找到了相同的型号，市面上的路由器版本也往往太新，而Openwrt没有release新版本的固件。</p>
@@ -222,10 +222,10 @@
 <li>TTL法</li>
 </ul>
 <p>在开始刷机之前，要先对路由器的结构有个基本的认识。路由器上的网线接口一般有1个WAN口，和多个LAN口，一般有不同的颜色和标识。</p>
-<p><img src="/Users/fantin/Desktop/20140417175607_4955.png" alt="路由器网口标识"></p>
+<p><img src="/blog/source/_posts/post2/Screen Shot 2018-05-12 at 12.41.04 PM.png" alt="路由器网口标识"></p>
 <p>除此之外，还有一个电源接口和一个小小的reset孔（一般而言reset孔在里面，要用牙签或者针头戳进去）。</p>
 <h4 id="网页法"><a href="#网页法" class="headerlink" title="网页法"></a>网页法</h4><p>首先在路由器的Openwrt Wiki 页面里找到官方的release版本，下载到本地。注意区分Install Image和Update Image，这里我们选择Install Image，文件后缀是<strong>squashfs-factory.bin</strong>。</p>
-<p><img src="/Users/fantin/Desktop/Screen Shot 2018-05-12 at 12.41.04 PM.png" alt="下载镜像和更新镜像"></p>
+<p><img src="/blog/source/_posts/post2/20140417175607_4955.png" alt="下载镜像和更新镜像"></p>
 <p>然后，将路由器断电，将LAN1口用网线与电脑连接，然后摁住reset按钮，同时接通电源。</p>
 <p>观察路由器的亮灯情况，一般要维持10s左右，亮灯状态维持稳定时，松开reset按钮。因为不同的路由器亮灯情况不同，如果不放心可以直接搜索 路由器型号+刷机 ，找到教程看具体的状态。</p>
 <p>从路由器背面查看ip地址，一般为：192.168.1.1，从网页输入ip地址登录。（账号密码信息也会在路由器背面贴出，一般默认是 admin ，如果没有可以上路由器官网查看。）</p>
@@ -235,8 +235,8 @@
 <li>关闭电脑防火墙</li>
 <li>查看版本号是否对应</li>
 </ul>
-<p>路由器运营商也可能会针对网页刷机做一些屏蔽，所以网页刷机往往成功率不高。如果失败了，可以继续尝试用TFTP方式刷机。</p>
-
+<p>路由器运营商也可能会针对网页刷机做一些屏蔽，所以网页刷机往往成功率不高。如果失败了，可以继续尝试用TFTP方式甚至TTL方式刷机。具体方法，请参加以下两篇。</p>
+<h4 id="TFTP法"><a href="#TFTP法" class="headerlink" title="TFTP法"></a><a href="">TFTP法</a></h4><h4 id="TTL法"><a href="#TTL法" class="headerlink" title="TTL法"></a><a href="">TTL法</a></h4>
       
     </div>
     <footer class="article-footer">
@@ -289,6 +289,15 @@ var a = new Donate({
     
 <nav id="article-nav">
   
+    <a href="/2018/05/13/post3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Start With OpenWrt /2
+        
+      </div>
+    </a>
+  
   
     <a href="/2018/05/11/post1/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
@@ -306,7 +315,7 @@ var a = new Donate({
     <div id="toc" class="toc-article">
     <strong class="toc-title">Contents</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Start-With-OpenWrt"><span class="nav-number">1.</span> <span class="nav-text">Start With OpenWrt</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#从挑选路由器到刷机"><span class="nav-number">1.1.</span> <span class="nav-text">从挑选路由器到刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择路由器"><span class="nav-number">1.1.1.</span> <span class="nav-text">选择路由器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器刷机"><span class="nav-number">1.1.2.</span> <span class="nav-text">路由器刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网页法"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">网页法</span></a></li></ol></li></ol></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Start-With-OpenWrt"><span class="nav-number">1.</span> <span class="nav-text">Start With OpenWrt</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#从挑选路由器到刷机"><span class="nav-number">1.1.</span> <span class="nav-text">从挑选路由器到刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择路由器"><span class="nav-number">1.1.1.</span> <span class="nav-text">选择路由器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器刷机"><span class="nav-number">1.1.2.</span> <span class="nav-text">路由器刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网页法"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">网页法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TFTP法"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">TFTP法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TTL法"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">TTL法</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

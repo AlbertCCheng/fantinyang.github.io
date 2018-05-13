@@ -3,22 +3,26 @@
 <head>
   <meta charset="utf-8">
   
-  <title>FantinOcean</title>
+  <title>start with openwrt /2 | FantinOcean</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
+  <meta name="keywords" content="Openwrt" />
   
   
   
-  <meta name="description" content="Have a nice day!">
-<meta property="og:type" content="website">
-<meta property="og:title" content="FantinOcean">
-<meta property="og:url" content="https://fantinyang.github.io/index.html">
+  
+  <meta name="description" content="Start With OpenWrt /2刷机进阶——TFTP法这两种方式在Openwrt的wiki页面应该都有很详细的指导教程，我的经验是，如果你找到了一个自认为靠谱的教程，也记得先看看wiki上的介绍，有个大致的概念和对错判断。如果两者有出入，基本还是以wiki为准的。  TFTP用TFTP方式刷机的原理其实和网页版本差不多，有一些版本的路由器甚至要挂载TFTP服务器才能完成固件更新。我的理解">
+<meta name="keywords" content="Openwrt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Start With OpenWrt &#x2F;2">
+<meta property="og:url" content="https://fantinyang.github.io/2018/05/13/post3/index.html">
 <meta property="og:site_name" content="FantinOcean">
-<meta property="og:description" content="Have a nice day!">
+<meta property="og:description" content="Start With OpenWrt /2刷机进阶——TFTP法这两种方式在Openwrt的wiki页面应该都有很详细的指导教程，我的经验是，如果你找到了一个自认为靠谱的教程，也记得先看看wiki上的介绍，有个大致的概念和对错判断。如果两者有出入，基本还是以wiki为准的。  TFTP用TFTP方式刷机的原理其实和网页版本差不多，有一些版本的路由器甚至要挂载TFTP服务器才能完成固件更新。我的理解">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-13T02:33:39.079Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="FantinOcean">
-<meta name="twitter:description" content="Have a nice day!">
+<meta name="twitter:title" content="Start With OpenWrt &#x2F;2">
+<meta name="twitter:description" content="Start With OpenWrt /2刷机进阶——TFTP法这两种方式在Openwrt的wiki页面应该都有很详细的指导教程，我的经验是，如果你找到了一个自认为靠谱的教程，也记得先看看wiki上的介绍，有个大致的概念和对错判断。如果两者有出入，基本还是以wiki为准的。  TFTP用TFTP方式刷机的原理其实和网页版本差不多，有一些版本的路由器甚至要挂载TFTP服务器才能完成固件更新。我的理解">
   
     <link rel="alternate" href="/atom.xml" title="FantinOcean" type="application/atom+xml">
   
@@ -47,11 +51,13 @@
   <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/home.css" >
+    <link rel="stylesheet" href="/css/dialog.css">
   
 
   
 
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
   
 
   
@@ -64,195 +70,107 @@
 
 
 
-  <body>
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
 
 
-  
-    <header id="header">
-
-	<!-- 背景图模式 -->
-	
-
-    
-      <div id="intrologo" class="intro-logo">
-    
- 
-
-
-    <canvas width="100%" height="100%"></canvas>
-    <script>
-      var c = document.getElementsByTagName('canvas')[0],
-          x = c.getContext('2d'),
-          w = window.innerWidth,
-          h = window.innerHeight,
-          pr = window.devicePixelRatio || 1,
-          f = 90,
-          q,
-          m = Math,
-          r = 0,
-          u = m.PI*2,
-          v = m.cos,
-          z = m.random
-      c.width = w*pr
-      c.height = h*pr
-      x.scale(pr, pr)
-      x.globalAlpha = 0.6
-
-      <!-- 折线Polyline背景 -->
-      
-        function i(){
-            x.clearRect(0,0,w,h)
-            q=[{x:0,y:h*.7+f},{x:0,y:h*.7-f}]
-            while(q[1].x<w+f) d(q[0], q[1])
-        }
-        function d(i,j){   
-            x.beginPath()
-            x.moveTo(i.x, i.y)
-            x.lineTo(j.x, j.y)
-            var k = j.x + (z()*2-0.25)*f,
-                n = y(j.y)
-            x.lineTo(k, n)
-            x.closePath()
-            r-=u/-50
-            x.fillStyle = '#'+(v(r)*127+128<<16 | v(r+u/3)*127+128<<8 | v(r+u/3*2)*127+128).toString(16)
-            x.fill()
-            q[0] = q[1]
-            q[1] = {x:k,y:n}
-        }
-        function y(p){
-            var t = p + (z()*2-1.1)*f
-            return (t>h||t<0) ? y(p) : t
-        }
-        document.getElementById("intrologo").onclick = i
-        document.getElementById("intrologo").ontouchstart = i
-        i()
-
-      <!-- 多边形trianglify背景 -->
-      
-    </script>
-    
-
-    
-      <div id="homelogo" class="homelogo"> 
-    
-
-        
-          <div class="homelogoback" >
-            <h1><a href="#content" id="logo">FantinOcean</a></h1>
-            <h3>Have a nice day!</h3>
-            <h5>Fantin</h5>
-            <!-- <p><a href="https://github.com/iTimeTraveler" target="_blank">Github</a></p> -->
-          </div>
-        
-    
-    </div>
-  </div>
-
-  <!-- 自适应主页背景大图 -->
-  
-
- <!-- home_logo_image居中 -->
- 
-    <script>
-        var homelogodiv = document.getElementById("homelogo");
-        if (document.all.homelogo.offsetWidth > document.body.clientWidth) {
-          homelogodiv.style.width = document.body.clientWidth + "px";
-          homelogodiv.style.marginLeft = document.body.clientWidth * -0.5 + "px";
-        } else {
-          homelogodiv.style.width = homelogodiv.clientWidth  + "px";
-          homelogodiv.style.marginLeft = (homelogodiv.clientWidth)  * -0.5 + "px";
-        }
-    </script>
-  
-
-  <div class="intro-navigate">
-      <p class="navigater-list">
-        
-          <a id="beautifont" class="main-nav-link" href="/">Home</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/archives">Archives</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/categories">Categories</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/tags">Tags</a>
-        
-          <a id="beautifont" class="main-nav-link" href="/about">About</a>
-        
-      </p>
-  </div>
-
-</header>
   
   <div id="container">
     <div id="wrap">
       
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="/css/images/mylogo.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">Home</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">Archives</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">Categories</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">Tags</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">About</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
             
       <div id="content" class="outer">
         
-          <section id="main" style="float:none;">
-  
-    <article id="post-post1"  class="article article-type-post" itemscope itemprop="blogPost" >
+          <section id="main" style="float:none;"><article id="post-post3" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="article-inner">
     
     
       <header class="article-header">
         
   
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/11/post1/">To Visiters</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2018/05/11/post1/" class="article-date">
-	  <time datetime="2018-05-11T11:52:05.000Z" itemprop="datePublished">2018-05-11</time>
-	</a>
-
-      
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="My-very-first-post-–-To-Visiters"><a href="#My-very-first-post-–-To-Visiters" class="headerlink" title="My very first post – To Visiters"></a>My very first post – To Visiters</h1><h3 id="Who-Am-I"><a href="#Who-Am-I" class="headerlink" title="Who Am I"></a>Who Am I</h3><p> You can find me in…</p>
-<ul>
-<li><a href="https://www.facebook.com/profile.php?id=100010334744185" target="_blank" rel="noopener">Facebook</a> </li>
-<li><a href="https://twitter.com/yangfantin" target="_blank" rel="noopener">Twitter</a></li>
-<li><a href="https://www.instagram.com/yangfantin/" target="_blank" rel="noopener">Instagram</a></li>
-<li><a href="https://weibo.com/y526147723/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo" target="_blank" rel="noopener">Weibo</a></li>
-<li><a href="https://space.bilibili.com/7781422/#/" target="_blank" rel="noopener">Bilibili</a> </li>
-<li><a href="yangfan.gm@gmail.com">Email</a>  </li>
-</ul>
-<p><strong>Facebook</strong>, <strong>Twitter</strong>, <strong>Insta</strong>, and <strong>Weibo</strong> are set up only as my social media, you can follow me if interested, but I won’t guarantee the quality.<br><strong>Bilibili</strong> is where I upload my Vlogs.<br>In the end, don’t hesitate to <strong>Email</strong> me.</p>
-<h3 id="What-I-gonna-do"><a href="#What-I-gonna-do" class="headerlink" title="What I gonna do"></a>What I gonna do</h3><p>The reason why I set up this blog is that I want to share my working experience with freshmen in SDN, Wireless Security, OpenWrt and so on. Because when I first stepped foot in these areas, I couldn’t always find the useful information online. There full of repeated tutorials and blogs, and what important is that most of the tutorials are not suitable for freshmen in engineering, because they assume the readers have equipped enough basic knowledge.<br>So I decided to share the journey of me on this blog, where I will focus more on how to start up the engineering and how to get useful information.<br>Hope it will be helpful to you.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Others/">Others</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-post3"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/13/post3/">Start With OpenWrt /2</a>
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Start With OpenWrt /2
     </h1>
   
 
@@ -266,6 +184,12 @@
 
       
       
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		PV:<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
     </div>
     <div class="article-entry" itemprop="articleBody">
       
@@ -348,88 +272,44 @@
     </div>
     <footer class="article-footer">
       
+        <div id="donation_div"></div>
+
+<script src="/js/vdonate.js"></script>
+<script>
+var a = new Donate({
+  title: 'There is no need for donation, but thank you', // 可选参数，打赏标题
+  btnText: 'Donate', // 可选参数，打赏按钮文字
+  el: document.getElementById('donation_div'),
+  wechatImage: '',
+  alipayImage: ''
+});
+</script>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Openwrt/">Openwrt</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-post2"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="article-inner">
-    
-    
-      <header class="article-header">
         
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2018/05/12/post2/">Start With OpenWrt</a>
-    </h1>
-  
+	<div id="comment">
+		<!-- 来必力City版安装代码 -->
+		<div id="lv-container" data-id="city" data-uid="MTAyMC8yOTQ4MS82MDQ5">
+		<script type="text/javascript">
+		   (function(d, s) {
+		       var j, e = d.getElementsByTagName(s)[0];
 
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2018/05/12/post2/" class="article-date">
-	  <time datetime="2018-05-12T04:53:08.000Z" itemprop="datePublished">2018-05-12</time>
-	</a>
+		       if (typeof LivereTower === 'function') { return; }
 
-      
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Start-With-OpenWrt"><a href="#Start-With-OpenWrt" class="headerlink" title="Start With OpenWrt"></a>Start With OpenWrt</h1><h2 id="从挑选路由器到刷机"><a href="#从挑选路由器到刷机" class="headerlink" title="从挑选路由器到刷机"></a>从挑选路由器到刷机</h2><p>不管你的用途是什么，只要涉及自定义路由器，<a href="https://openwrt.org/" target="_blank" rel="noopener">Openwrt</a>是最常用也最好用的开源系统。把一款商用路由器刷成Openwrt路由器，其实就是更改路由器的固件——将路由器默认的固件（.bin）文件替换。那么如何将市面上买的商用路由器刷成Openwrt系统呢？第一步要做的，是先选择一款路由器。</p>
-<hr>
-<h3 id="选择路由器"><a href="#选择路由器" class="headerlink" title="选择路由器"></a>选择路由器</h3><p>首先，选择路由器基本可以遵循以下步骤：</p>
-<ul>
-<li>选择一个路由器<strong>品牌(Brand)</strong>（D-Link，TP-Link等），在网上查询现有售卖的<strong>型号(Model)</strong>。</li>
-<li>在Openwrt的<a href="https://wiki.openwrt.org/toh/start" target="_blank" rel="noopener">wiki</a>页面上选择品牌和型号，与市面上还能买到的路由器对应查看，选择一款能够买到的。</li>
-<li>进入对应路由器wiki页面，查看Openwrt官方固件出的<strong>版本号(Version)</strong>。</li>
-<li>向卖家确认路由器版本号。</li>
-</ul>
-<p>到这里都没有碰壁，只能说你非常幸运。因为通过正规渠道有售的路由器在Openwrt上能找到的就已经不多，其次即使找到了相同的型号，市面上的路由器版本也往往太新，而Openwrt没有release新版本的固件。</p>
-<p>这里需要特别注意的是，旧版本一般不能适配新版本，虽然他们的型号一样，但是不同版本之间的硬件设置不同。而且，同一个版本的海内外产品也有区别。</p>
-<p>还要说明的是，OpenWrt是国外的平台，而路由器厂商针对中国市场和海外市场对同一款路由器有不同版本的配置。一般而言，海外版本的路由器更适合搭载Openwrt系统，因为他们往往拥有更大的Flash内存。国内的新路由器一般只配置4M的Flash内存（有的甚至只有2M），基本只够勉强塞入固件系统（3.8M），更别提承载其他配置。</p>
-<p>所以我的经验是，通过正规渠道一般已经没有办法购买到合适的路由器了，就算真的购买到了，后续可能也需要对路由器的Flash和RAM进行扩容。嫌麻烦的人其实可以直接上淘宝买个改装好的路由器，有工程追求的人请参见以下几篇硬改教程：</p>
-<ul>
-<li><a href="https://blog.csdn.net/aggresss/article/details/52753098" target="_blank" rel="noopener">aggresss的专栏</a></li>
-<li><a href="https://my.oschina.net/osbin/blog/282141" target="_blank" rel="noopener">TP-LINK 845N V1硬改</a></li>
-<li><a href="https://blog.csdn.net/flyingcys/article/details/54671532" target="_blank" rel="noopener">TP-LINK_841N_V8路由器</a> （好文！）</li>
-</ul>
-<hr>
-<h3 id="路由器刷机"><a href="#路由器刷机" class="headerlink" title="路由器刷机"></a>路由器刷机</h3><p>现在，你有了一个可以刷Openwrt官方固件的路由器，但是我们默认路由器内置的固件还是运营商提供的。所以这一步讲的是如何将固件刷成Openwrt，难度从低到高有三种：</p>
-<ul>
-<li>网页法</li>
-<li>TFTP法</li>
-<li>TTL法</li>
-</ul>
-<p>在开始刷机之前，要先对路由器的结构有个基本的认识。路由器上的网线接口一般有1个WAN口，和多个LAN口，一般有不同的颜色和标识。</p>
-<p><img src="/blog/source/_posts/post2/Screen Shot 2018-05-12 at 12.41.04 PM.png" alt="路由器网口标识"></p>
-<p>除此之外，还有一个电源接口和一个小小的reset孔（一般而言reset孔在里面，要用牙签或者针头戳进去）。</p>
-<h4 id="网页法"><a href="#网页法" class="headerlink" title="网页法"></a>网页法</h4><p>首先在路由器的Openwrt Wiki 页面里找到官方的release版本，下载到本地。注意区分Install Image和Update Image，这里我们选择Install Image，文件后缀是<strong>squashfs-factory.bin</strong>。</p>
-<p><img src="/blog/source/_posts/post2/20140417175607_4955.png" alt="下载镜像和更新镜像"></p>
-<p>然后，将路由器断电，将LAN1口用网线与电脑连接，然后摁住reset按钮，同时接通电源。</p>
-<p>观察路由器的亮灯情况，一般要维持10s左右，亮灯状态维持稳定时，松开reset按钮。因为不同的路由器亮灯情况不同，如果不放心可以直接搜索 路由器型号+刷机 ，找到教程看具体的状态。</p>
-<p>从路由器背面查看ip地址，一般为：192.168.1.1，从网页输入ip地址登录。（账号密码信息也会在路由器背面贴出，一般默认是 admin ，如果没有可以上路由器官网查看。）</p>
-<p>进入页面后，选择软件升级，然后添加刚刚下载的 <strong>.bin</strong> 文件，点击更新即可。<strong>注意过程中保持电源通电，等待路由器重启成功。</strong> </p>
-<p>通过网页的方式非常简单，但是也经常失败，如果不成功可以尝试：</p>
-<ul>
-<li>关闭电脑防火墙</li>
-<li>查看版本号是否对应</li>
-</ul>
-<p>路由器运营商也可能会针对网页刷机做一些屏蔽，所以网页刷机往往成功率不高。如果失败了，可以继续尝试用TFTP方式甚至TTL方式刷机。具体方法，请参加以下两篇。</p>
-<h4 id="TFTP法"><a href="#TFTP法" class="headerlink" title="TFTP法"></a><a href="">TFTP法</a></h4><h4 id="TTL法"><a href="#TTL法" class="headerlink" title="TTL法"></a><a href="">TTL法</a></h4>
-      
-    </div>
-    <footer class="article-footer">
-      
+		       j = d.createElement(s);
+		       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		       j.async = true;
+
+		       e.parentNode.insertBefore(j, e);
+		   })(document, 'script');
+		</script>
+		<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+		</div>
+		<!-- City版安装代码已完成 -->
+	</div>
+
+
+
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Openwrt/">Openwrt</a></li></ul>
@@ -437,18 +317,33 @@
     </footer>
   </div>
   
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/05/12/post2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Start With OpenWrt</div>
+    </a>
+  
+</nav>
+
+  
 </article>
 
 <!-- Table of Contents -->
 
-  
-
-
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Start-With-OpenWrt-2"><span class="nav-number">1.</span> <span class="nav-text">Start With OpenWrt /2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#刷机进阶——TFTP法"><span class="nav-number">1.1.</span> <span class="nav-text">刷机进阶——TFTP法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TFTP"><span class="nav-number">1.1.1.</span> <span class="nav-text">TFTP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备工作"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基本步骤"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">基本步骤</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TFTP方式的其他命令行形式实现"><span class="nav-number">1.1.2.</span> <span class="nav-text">TFTP方式的其他命令行形式实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#aTFTP"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">aTFTP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Netkit’s-TFTP"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">Netkit’s TFTP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#curl"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">curl</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tips总结"><span class="nav-number">1.1.3.</span> <span class="nav-text">Tips总结</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
 </section>
         
       </div>
-      
-        <div align="center" style="margin-top: 30px;"><hr class="hr" style="margin:0px; height:3px;"></div>
       
       <footer id="footer">
   
@@ -540,9 +435,9 @@
 <script src="/js/scripts.js"></script>
 
 
-  <script src="/js/home.js"></script>
 
 
+  <script src="/js/dialog.js"></script>
 
 
 
@@ -627,6 +522,8 @@
   
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
   
 </body>
 </html>
