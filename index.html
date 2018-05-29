@@ -9,16 +9,13 @@
   
   
   
-  <meta name="description" content="Have a nice day!">
-<meta property="og:type" content="website">
+  <meta property="og:type" content="website">
 <meta property="og:title" content="FantinOcean">
 <meta property="og:url" content="https://fantinyang.github.io/index.html">
 <meta property="og:site_name" content="FantinOcean">
-<meta property="og:description" content="Have a nice day!">
 <meta property="og:locale" content="default">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FantinOcean">
-<meta name="twitter:description" content="Have a nice day!">
   
     <link rel="alternate" href="/atom.xml" title="FantinOcean" type="application/atom+xml">
   
@@ -139,7 +136,7 @@
         
           <div class="homelogoback" >
             <h1><a href="#content" id="logo">FantinOcean</a></h1>
-            <h3>Have a nice day!</h3>
+            <h3></h3>
             <h5>Fantin</h5>
             <!-- <p><a href="https://github.com/iTimeTraveler" target="_blank">Github</a></p> -->
           </div>
@@ -236,6 +233,129 @@
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Others/">Others</a></li></ul>
 
+    </footer>
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-post4"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2018/05/29/post4/">Start With OpenWrt /3</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/05/29/post4/" class="article-date">
+	  <time datetime="2018-05-29T09:42:28.000Z" itemprop="datePublished">2018-05-29</time>
+	</a>
+
+      
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Start-with-OpenWrt-3"><a href="#Start-with-OpenWrt-3" class="headerlink" title="Start with OpenWrt /3"></a>Start with OpenWrt /3</h1><h2 id="终极刷机——TTL法"><a href="#终极刷机——TTL法" class="headerlink" title="终极刷机——TTL法"></a>终极刷机——TTL法</h2><hr>
+<p>TTL刷机就是指用TTL线（串口线）让路由器与电脑的BOOT进行串口通信，然后通过网口利用TFTP把固件传输过来。</p>
+<p>所以这种方法同样适合在路由器死机变砖了之后救活它。</p>
+<p>引用一个<a href="https://blog.csdn.net/xcoderone/article/details/48030771" target="_blank" rel="noopener">滑冰犀鸟</a>的原理解释：</p>
+<blockquote>
+<h3 id="原理说明"><a href="#原理说明" class="headerlink" title="原理说明"></a>原理说明</h3><ul>
+<li>TTL线就是串口线（USB转串口）。</li>
+<li>系统固件不是通过TTL线传输到路由器中。</li>
+<li>TTL线的作用是让PC端和BOOT进行串口通信。</li>
+<li>PC端通过串口线使用BOOT的控制台。</li>
+<li>系统固件实际是通过网口（TFTP协议）传输到路由器中。</li>
+</ul>
+</blockquote>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><ul>
+<li><p>TTL刷机需要进行一些焊接工作，提前准备好<strong>电烙铁，排针，杜邦线</strong>等电工工具。</p>
+</li>
+<li><p><strong>TTL转USB线</strong>，可以在淘宝买到，但是一定要买对型号，具体可参考wiki或询问淘宝客服。</p>
+</li>
+<li><p>网线</p>
+</li>
+<li><p>Windows上安装SecureCRT、Putty、Tftpd(注意选择32位/64位)。</p>
+</li>
+</ul>
+<h3 id="硬件准备"><a href="#硬件准备" class="headerlink" title="硬件准备"></a>硬件准备</h3><p>首先，在OpenWrt的wiki页面找到相应型号路由器的电路板图片。以TP-LINK 841n为例，它的<a href="https://wiki.openwrt.org/toh/tp-link/tl-wr841nd" target="_blank" rel="noopener">wiki</a>页面下有一个<strong>Serial port settings:</strong>栏，在其中你可以找到电路板上GND RX TX在哪（一般都不会使用到VCC，但具体还是要根据路由器型号判断）。</p>
+<p><img src="https://wiki.openwrt.org/_media/media/tplink/tl-wr841/tl-wr841n-v7.2_serial-pinout.jpg?cache=" alt="hardware"></p>
+<p>然后，将GND口、TX和RX焊上排针，再用杜邦线连接出来。</p>
+<p><strong>TTL转USB线</strong>比较推荐如图这样的，无须再焊接，把从排针印出来的杜邦线接上就可以了。需要注意的是，购买转串口线的时候一定要注意型号，在wiki看好型号再去找，买的时候也要多和卖家沟通，否则会出现扫码率怎么都对不上等乱七八糟的问题。</p>
+<p><img src="https://www.icshop.com.tw/images/product_images/original_images/22215_0.gif" alt="杜邦线"></p>
+<p>接着，将电路板引出来的TX接到串口线的RX，RX接到TX，GND接GND，电路方面的准备工作理论上就完成了。</p>
+<h3 id="正式刷机"><a href="#正式刷机" class="headerlink" title="正式刷机"></a>正式刷机</h3><ul>
+<li>设置电脑ip设置到与路由器相同网段，如：192.168.1.169</li>
+<li>打开<strong>SecureCRT</strong>，按照如下设置并连接。</li>
+</ul>
+<p>​    protol: <strong>Serial</strong></p>
+<p>​    port: <strong>COMx</strong> （在电脑的<strong>设备管理器</strong>中查看端口号）</p>
+<p>​    Baud rate: <strong>115200</strong>（通常是这个速率，但具体值根据型号不同有所不同）</p>
+<p>​    Data bits: <strong>8</strong></p>
+<p>​    Parity: <strong>None</strong></p>
+<p>​    Stop bits: <strong>1</strong></p>
+<p>​    Flow Control: <strong>均不钩选</strong></p>
+<p>​    </p>
+<ul>
+<li><p>将电脑的无线网卡禁用，如果电脑有多张有线网卡也将其他几张禁用，关闭防火墙。</p>
+</li>
+<li><p>把官方固件（openwrt-ar71xx-generic-tl-wr841nd-v7-squashfs-factory.bin</p>
+<p>）与<strong>Tftpd32</strong>放在同一个文件夹中（官方固件的获取方式在上两篇文章中有介绍），打开tftpd。</p>
+</li>
+<li><p>将USB串口连接到电脑，为路由器通电，<strong>WAN</strong>口用网线与电脑网口相连，在SecureCRT中可以看到开机信息，则证明串口连接成功。</p>
+<p>如果出现乱码，应该是Baud rate设置有误；如果没有反应，但路由器灯正常亮起，则可能是电路出了问题。</p>
+</li>
+<li><p>将路由器断电，重新通电，在SecureCRT上查看打印信息，出现</p>
+<blockquote>
+<p>Autobooting in 1s…</p>
+</blockquote>
+<p>马上在键盘上按下tpl（也有一些路由器需要按Ctrl+c 或者其他，具体可以参照特定路由器的刷机教程）</p>
+</li>
+<li><p>成功进入路由器系统的boot界面。</p>
+</li>
+<li><p>在窗口输入：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setenv ipaddr 192.168.1.1</span><br><span class="line">setenv serverip 192.168.1.169</span><br></pre></td></tr></table></figure>
+<p>​    ipaddr 是路由器的ip地址</p>
+<p>​    serverip是电脑的ip地址</p>
+</li>
+<li><p>将固件拷到路由器内存中，0x80000000是flash上一段空白位置，可以暂时存储文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ar7240&gt; tftpboot 0x80000000 openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-factory.bin</span><br><span class="line">Using eth0 device</span><br><span class="line">TFTP from server 192.168.1.100; our IP address is 192.168.1.111</span><br><span class="line">Filename <span class="string">'openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-factory.bin'</span>.</span><br><span class="line">Load address: 0x80000000</span><br><span class="line">Loading: checksum bad</span><br><span class="line"><span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">#################################################################</span></span><br><span class="line">         <span class="comment">######################################################</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line">Bytes transferred = 3932160 (3c0000 hex)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将flash原来的固件文件擦除</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ar7240&gt; erase 0x9f020000 +0x3c0000</span><br></pre></td></tr></table></figure>
+<p>0x9f020000为内核的启动地址，在<strong>开机的引导信息</strong>中可以看到，见840N的U-boot行 </p>
+<blockquote>
+<p>Booting image at 9f020000 …</p>
+</blockquote>
+<p> 不同的路由器启动地址也有所不同，具体情况可以在uboot行中看到。 </p>
+<p>0x3c0000为固件大小，这个输错了路由器会变砖，上一步返回信息的最后一句会给出。</p>
+</li>
+<li><p>擦除完成后，将openwrt固件复制到固件启动地址中，bootm启动。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ar7240&gt; cp.b 0x80000000 0x9f020000 0x3c0000</span><br><span class="line">ar7240&gt; bootm 0x9f020000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>之后，系统就开始重新启动了，将计算机网线接入LAN口，完成刷机啦。</p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>特别说明，这里的刷机过程是以TP-LINK TL-WR841N为例的，其他型号可能在细节上需要稍作改动，但具体都可以参考<a href="http://wiki.openwrt.org/toh/start#tp-link" target="_blank" rel="noopener">Openwrt wiki</a>，当然，这句话也是经常出现在我的教程里，就是去wiki页面参考。虽然wiki是英文版面，有时候大家看起来会有点吃力而遗漏很多细节，但是其中真的包罗万象，几乎能解决你所有遇到的问题。所以在wiki中好好探索吧。</p>
+<p>虽然想写一个适用于新手的教程，但是写下来才发现，其实每个人遇到的问题都是不一样的，而我也只能主要强调我踩过的坑。所以也许也不是那么适合所有人，这一点真的非常遗憾。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+      
+      
     </footer>
   </div>
   
