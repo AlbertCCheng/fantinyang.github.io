@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="OpenFlow," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="此文章解析主函数中没有详细解读的 add_ports 函数。 主函数引用调用如下： 123if (port_list) &amp;#123;    add_ports(dp, port_list);&amp;#125; 在函数开始时，将 port_list 里的端口打开。 add_portstrtok_r 函数相当于是 linux 平台下的 strtok 函数，主要用于分隔结构体的各成员。 12345678910">
+<meta name="keywords" content="OpenFlow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenFlow1.0.0 代码解读——add port">
+<meta property="og:url" content="https://fantinyang.github.io/2018/07/24/post7/index.html">
+<meta property="og:site_name" content="FantinOcean">
+<meta property="og:description" content="此文章解析主函数中没有详细解读的 add_ports 函数。 主函数引用调用如下： 123if (port_list) &amp;#123;    add_ports(dp, port_list);&amp;#125; 在函数开始时，将 port_list 里的端口打开。 add_portstrtok_r 函数相当于是 linux 平台下的 strtok 函数，主要用于分隔结构体的各成员。 12345678910">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-07-24T06:58:58.961Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenFlow1.0.0 代码解读——add port">
+<meta name="twitter:description" content="此文章解析主函数中没有详细解读的 add_ports 函数。 主函数引用调用如下： 123if (port_list) &amp;#123;    add_ports(dp, port_list);&amp;#125; 在函数开始时，将 port_list 里的端口打开。 add_portstrtok_r 函数相当于是 linux 平台下的 strtok 函数，主要用于分隔结构体的各成员。 12345678910">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":true},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://fantinyang.github.io/2018/07/24/post7/"/>
+
+
+
+
+
+  <title>OpenFlow1.0.0 代码解读——add port | FantinOcean</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FantinOcean</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fantinyang.github.io/2018/07/24/post7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fantin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FantinOcean">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OpenFlow1.0.0 代码解读——add port</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-24T14:57:26+08:00">
+                2018-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>此文章解析主函数中没有详细解读的 add_ports 函数。</p>
+<p>主函数引用调用如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (port_list) &#123;</span><br><span class="line">    add_ports(dp, port_list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在函数开始时，将 <strong>port_list</strong> 里的端口打开。</p>
+<h2 id="add-port"><a href="#add-port" class="headerlink" title="add_port"></a>add_port</h2><p><a href="https://blog.csdn.net/xhu_eternalcc/article/details/19770467" target="_blank" rel="noopener"><strong>strtok_r</strong></a> 函数相当于是 linux 平台下的 <strong>strtok</strong> 函数，主要用于分隔结构体的各成员。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span></span><br><span class="line">add_ports(struct datapath *dp, <span class="keyword">char</span> *port_list)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">char</span> *port, *save_ptr; </span><br><span class="line">    <span class="comment">/* Glibc 2.7 has a bug in strtok_r when compiling with optimization that</span></span><br><span class="line"><span class="comment">     * can cause segfaults here:</span></span><br><span class="line"><span class="comment">     * http://sources.redhat.com/bugzilla/show_bug.cgi?id=5614.</span></span><br><span class="line"><span class="comment">     * Using ",," instead of the obvious "," works around it. */</span></span><br><span class="line">    <span class="keyword">for</span> (port = strtok_r(port_list, <span class="string">",,"</span>, &amp;save_ptr); port;</span><br><span class="line">         port = strtok_r(<span class="literal">NULL</span>, <span class="string">",,"</span>, &amp;save_ptr)) &#123;</span><br><span class="line">        <span class="keyword">int</span> error = dp_add_port(dp, port, num_queues);</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            ofp_fatal(error, <span class="string">"failed to add port %s"</span>, port);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数首先对 port_list 结构体做处理，赋值到参数 port 中，port 作为具体的端口名，调用 <strong>dp_add_port</strong> 函数。</p>
+<h2 id="dp-add-port"><a href="#dp-add-port" class="headerlink" title="dp_add_port"></a>dp_add_port</h2><p>此函数中的 port 与上一层函数的 port 不同，add_port 中的 port 是一个 char 型指针变量，指向端口名。这一函数中的 port 是 <strong>sw_port</strong> 结构体的指针，具体定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sw_port</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> config;            <span class="comment">/* Some subset of OFPPC_* flags. */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> state;             <span class="comment">/* Some subset of OFPPS_* flags. */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">datapath</span> *<span class="title">dp</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">netdev</span> *<span class="title">netdev</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list</span> <span class="title">node</span>;</span> <span class="comment">/* Element in datapath.ports. */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> rx_packets, tx_packets;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> rx_bytes, tx_bytes;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> tx_dropped;</span><br><span class="line">    <span class="keyword">uint16_t</span> port_no;</span><br><span class="line">    <span class="comment">/* port queues */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> num_queues;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sw_queue</span> <span class="title">queues</span>[<span class="title">NETDEV_MAX_QUEUES</span>];</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list</span> <span class="title">queue_list</span>;</span> <span class="comment">/* list of all queues for this port */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>sw_port 结构体中包含具体的网络端口 <strong>netdev</strong> ，所以函数判断 port 结构体中的 netdev 是否为空，从而判断端口是否打开。没有打开则调用 <strong>new_port</strong> 函数打开端口。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">dp_add_port(struct datapath *dp, <span class="keyword">const</span> <span class="keyword">char</span> *netdev, <span class="keyword">uint16_t</span> num_queues)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> port_no;</span><br><span class="line">    <span class="keyword">for</span> (port_no = <span class="number">1</span>; port_no &lt; DP_MAX_PORTS; port_no++) &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">sw_port</span> *<span class="title">port</span> = &amp;<span class="title">dp</span>-&gt;<span class="title">ports</span>[<span class="title">port_no</span>];</span></span><br><span class="line">        <span class="keyword">if</span> (!port-&gt;netdev) &#123;</span><br><span class="line">            <span class="keyword">return</span> new_port(dp, port, port_no, netdev, <span class="literal">NULL</span>, num_queues);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> EXFULL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="new-port"><a href="#new-port" class="headerlink" title="new_port"></a>new_port</h2><p>该函数的主要功能包括：</p>
+<ul>
+<li>调用 <strong>netdev_open</strong> 函数打开网络设备，成功则返回0。具体的网络设备处理由 <strong>do_open_netdev</strong> 执行。</li>
+<li>设置网络设备的mac地址</li>
+<li>设置flags</li>
+<li>设置ip地址</li>
+<li>添加信息到 port 结构体中</li>
+<li>调用 <strong>send_port_status</strong>  将端口设置成功的消息发送到与controller之间的安全信道</li>
+</ul>
+<p>函数代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">new_port(struct datapath *dp, struct sw_port *port, <span class="keyword">uint16_t</span> port_no,</span><br><span class="line">         <span class="keyword">const</span> <span class="keyword">char</span> *netdev_name, <span class="keyword">const</span> <span class="keyword">uint8_t</span> *new_mac, <span class="keyword">uint16_t</span> num_queues)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">netdev</span> *<span class="title">netdev</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> <span class="title">in6</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">in4</span>;</span></span><br><span class="line">    <span class="keyword">int</span> error;</span><br><span class="line"></span><br><span class="line">    error = netdev_open(netdev_name, NETDEV_ETH_TYPE_ANY, &amp;netdev);</span><br><span class="line">    <span class="keyword">if</span> (error) &#123;</span><br><span class="line">        <span class="keyword">return</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (new_mac &amp;&amp; !eth_addr_equals(netdev_get_etheraddr(netdev), new_mac)) &#123;</span><br><span class="line">        <span class="comment">/* Generally the device has to be down before we change its hardware</span></span><br><span class="line"><span class="comment">         * address.  Don't bother to check for an error because it's really</span></span><br><span class="line"><span class="comment">         * the netdev_set_etheraddr() call below that we care about. */</span></span><br><span class="line">        netdev_set_flags(netdev, <span class="number">0</span>, <span class="literal">false</span>);</span><br><span class="line">        error = netdev_set_etheraddr(netdev, new_mac);</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            VLOG_WARN(<span class="string">"failed to change %s Ethernet address "</span></span><br><span class="line">                      <span class="string">"to "</span>ETH_ADDR_FMT<span class="string">": %s"</span>,</span><br><span class="line">                      netdev_name, ETH_ADDR_ARGS(new_mac), strerror(error));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    error = netdev_set_flags(netdev, NETDEV_UP | NETDEV_PROMISC, <span class="literal">false</span>);</span><br><span class="line">    <span class="keyword">if</span> (error) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"failed to set promiscuous mode on %s device"</span>, netdev_name);</span><br><span class="line">        netdev_close(netdev);</span><br><span class="line">        <span class="keyword">return</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (netdev_get_in4(netdev, &amp;in4)) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"%s device has assigned IP address %s"</span>,</span><br><span class="line">                 netdev_name, inet_ntoa(in4));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (netdev_get_in6(netdev, &amp;in6)) &#123;</span><br><span class="line">        <span class="keyword">char</span> in6_name[INET6_ADDRSTRLEN + <span class="number">1</span>];</span><br><span class="line">        inet_ntop(AF_INET6, &amp;in6, in6_name, <span class="keyword">sizeof</span> in6_name);</span><br><span class="line">        VLOG_ERR(<span class="string">"%s device has assigned IPv6 address %s"</span>,</span><br><span class="line">                 netdev_name, in6_name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (num_queues &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        error = netdev_setup_slicing(netdev, num_queues);</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            VLOG_ERR(<span class="string">"failed to configure slicing on %s device: "</span>\</span><br><span class="line">                     <span class="string">"check INSTALL for dependencies, or rerun "</span>\</span><br><span class="line">                     <span class="string">"using --no-slicing option to disable slicing"</span>,</span><br><span class="line">                     netdev_name);</span><br><span class="line">            netdev_close(netdev);</span><br><span class="line">            <span class="keyword">return</span> error;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(port, <span class="string">'\0'</span>, <span class="keyword">sizeof</span> *port);</span><br><span class="line"></span><br><span class="line">    list_init(&amp;port-&gt;queue_list);</span><br><span class="line">    port-&gt;dp = dp;</span><br><span class="line">    port-&gt;netdev = netdev;</span><br><span class="line">    port-&gt;port_no = port_no;</span><br><span class="line">    port-&gt;num_queues = num_queues;</span><br><span class="line">    list_push_back(&amp;dp-&gt;port_list, &amp;port-&gt;node);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Notify the ctlpath that this port has been added */</span></span><br><span class="line">    send_port_status(port, OFPPR_ADD);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以重点看一下 <strong>do_open_netdev</strong> 和 <strong>send_port_status</strong> 函数。</p>
+<h2 id="do-open-netdev"><a href="#do-open-netdev" class="headerlink" title="do_open_netdev"></a>do_open_netdev</h2><p>此函数是以 <strong>netdev_open</strong> 函数作为入口被调用的，可以简单看一下 netdev_open 函数。</p>
+<h3 id="netdev-open"><a href="#netdev-open" class="headerlink" title="netdev_open"></a>netdev_open</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Opens the network device named 'name' (e.g. "eth0") and returns zero if</span></span><br><span class="line"><span class="comment"> * successful, otherwise a positive errno value.  On success, sets '*netdevp'</span></span><br><span class="line"><span class="comment"> * to the new network device, otherwise to null.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 'ethertype' may be a 16-bit Ethernet protocol value in host byte order to</span></span><br><span class="line"><span class="comment"> * capture frames of that type received on the device.  It may also be one of</span></span><br><span class="line"><span class="comment"> * the 'enum netdev_pseudo_ethertype' values to receive frames in one of those</span></span><br><span class="line"><span class="comment"> * categories. */</span></span><br><span class="line"><span class="keyword">int</span></span><br><span class="line">netdev_open(<span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">int</span> ethertype, struct netdev **netdevp)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">strncmp</span>(name, <span class="string">"tap:"</span>, <span class="number">4</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> netdev_open_tap(name + <span class="number">4</span>, netdevp);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> do_open_netdev(name, ethertype, <span class="number">-1</span>, netdevp);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总体比较简单，需要特地说明的是输入参数 <strong>ethertype</strong> 。该参数在 netdev_open 中的输入是 <strong>NETDEV_ETH_TYPE_ANY</strong> 。在 netdev.h 中有具体定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> netdev_pseudo_ethertype &#123;</span><br><span class="line">    NETDEV_ETH_TYPE_NONE = <span class="number">-128</span>, <span class="comment">/* Receive no frames. */</span></span><br><span class="line">    NETDEV_ETH_TYPE_ANY,         <span class="comment">/* Receive all frames. */</span></span><br><span class="line">    NETDEV_ETH_TYPE_802_2        <span class="comment">/* Receive all IEEE 802.2 frames. */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>回到 do_open_netdev 函数，该函数代码如下，不过多解释。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">do_open_netdev(<span class="keyword">const</span> <span class="keyword">char</span> *name, <span class="keyword">int</span> ethertype, <span class="keyword">int</span> tap_fd,</span><br><span class="line">               struct netdev **netdev_)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> netdev_fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_ll</span> <span class="title">sll</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> ifindex;</span><br><span class="line">    <span class="keyword">uint8_t</span> etheraddr[ETH_ADDR_LEN];</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> <span class="title">in6</span>;</span></span><br><span class="line">    <span class="keyword">int</span> mtu;</span><br><span class="line">    <span class="keyword">int</span> txqlen;</span><br><span class="line">    <span class="keyword">int</span> hwaddr_family;</span><br><span class="line">    <span class="keyword">int</span> error;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">netdev</span> *<span class="title">netdev</span>;</span></span><br><span class="line"></span><br><span class="line">    init_netdev();</span><br><span class="line">    *netdev_ = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Create raw socket. */</span></span><br><span class="line">    netdev_fd = socket(PF_PACKET, SOCK_RAW,</span><br><span class="line">                       htons(ethertype == NETDEV_ETH_TYPE_NONE ? <span class="number">0</span></span><br><span class="line">                             : ethertype == NETDEV_ETH_TYPE_ANY ? ETH_P_ALL</span><br><span class="line">                             : ethertype == NETDEV_ETH_TYPE_802_2 ? ETH_P_802_2</span><br><span class="line">                             : ethertype));</span><br><span class="line">    <span class="keyword">if</span> (netdev_fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> errno;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Set non-blocking mode. */</span></span><br><span class="line">    error = set_nonblocking(netdev_fd);</span><br><span class="line">    <span class="keyword">if</span> (error) &#123;</span><br><span class="line">        <span class="keyword">goto</span> error_already_set;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get ethernet device index. */</span></span><br><span class="line">    <span class="built_in">strncpy</span>(ifr.ifr_name, name, <span class="keyword">sizeof</span> ifr.ifr_name);</span><br><span class="line">    <span class="keyword">if</span> (ioctl(netdev_fd, SIOCGIFINDEX, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"ioctl(SIOCGIFINDEX) on %s device failed: %s"</span>,</span><br><span class="line">                 name, strerror(errno));</span><br><span class="line">        <span class="keyword">goto</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    ifindex = ifr.ifr_ifindex;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Bind to specific ethernet device. */</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;sll, <span class="number">0</span>, <span class="keyword">sizeof</span> sll);</span><br><span class="line">    sll.sll_family = AF_PACKET;</span><br><span class="line">    sll.sll_ifindex = ifindex;</span><br><span class="line">    <span class="keyword">if</span> (bind(netdev_fd, (struct sockaddr *) &amp;sll, <span class="keyword">sizeof</span> sll) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"bind to %s failed: %s"</span>, name, strerror(errno));</span><br><span class="line">        <span class="keyword">goto</span> error;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ethertype != NETDEV_ETH_TYPE_NONE) &#123;</span><br><span class="line">        <span class="comment">/* Between the socket() and bind() calls above, the socket receives all</span></span><br><span class="line"><span class="comment">         * packets of the requested type on all system interfaces.  We do not</span></span><br><span class="line"><span class="comment">         * want to receive that data, but there is no way to avoid it.  So we</span></span><br><span class="line"><span class="comment">         * must now drain out the receive queue. */</span></span><br><span class="line">        error = drain_rcvbuf(netdev_fd);</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            <span class="keyword">goto</span> error;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get MAC address. */</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(netdev_fd, SIOCGIFHWADDR, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"ioctl(SIOCGIFHWADDR) on %s device failed: %s"</span>,</span><br><span class="line">                 name, strerror(errno));</span><br><span class="line">        <span class="keyword">goto</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    hwaddr_family = ifr.ifr_hwaddr.sa_family;</span><br><span class="line">    <span class="keyword">if</span> (hwaddr_family != AF_UNSPEC &amp;&amp; hwaddr_family != ARPHRD_ETHER) &#123;</span><br><span class="line">        VLOG_WARN(<span class="string">"%s device has unknown hardware address family %d"</span>,</span><br><span class="line">                  name, hwaddr_family);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">memcpy</span>(etheraddr, ifr.ifr_hwaddr.sa_data, <span class="keyword">sizeof</span> etheraddr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get MTU. */</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(netdev_fd, SIOCGIFMTU, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"ioctl(SIOCGIFMTU) on %s device failed: %s"</span>,</span><br><span class="line">                 name, strerror(errno));</span><br><span class="line">        <span class="keyword">goto</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    mtu = ifr.ifr_mtu;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get TX queue length. */</span></span><br><span class="line">    <span class="keyword">if</span> (ioctl(netdev_fd, SIOCGIFTXQLEN, &amp;ifr) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        VLOG_ERR(<span class="string">"ioctl(SIOCGIFTXQLEN) on %s device failed: %s"</span>,</span><br><span class="line">                 name, strerror(errno));</span><br><span class="line">        <span class="keyword">goto</span> error;</span><br><span class="line">    &#125;</span><br><span class="line">    txqlen = ifr.ifr_qlen;</span><br><span class="line"></span><br><span class="line">    get_ipv6_address(name, &amp;in6);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Allocate network device. */</span></span><br><span class="line">    netdev = xmalloc(<span class="keyword">sizeof</span> *netdev);</span><br><span class="line">    netdev-&gt;name = xstrdup(name);</span><br><span class="line">    netdev-&gt;ifindex = ifindex;</span><br><span class="line">    netdev-&gt;txqlen = txqlen;</span><br><span class="line">    netdev-&gt;hwaddr_family = hwaddr_family;</span><br><span class="line">    netdev-&gt;netdev_fd = netdev_fd;</span><br><span class="line">    netdev-&gt;tap_fd = tap_fd &lt; <span class="number">0</span> ? netdev_fd : tap_fd;</span><br><span class="line">    netdev-&gt;queue_fd[<span class="number">0</span>] = netdev-&gt;tap_fd;</span><br><span class="line">    <span class="built_in">memcpy</span>(netdev-&gt;etheraddr, etheraddr, <span class="keyword">sizeof</span> etheraddr);</span><br><span class="line">    netdev-&gt;mtu = mtu;</span><br><span class="line">    netdev-&gt;in6 = in6;</span><br><span class="line">    netdev-&gt;num_queues = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get speed, features. */</span></span><br><span class="line">    do_ethtool(netdev);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Save flags to restore at close or exit. */</span></span><br><span class="line">    error = get_flags(netdev-&gt;name, &amp;netdev-&gt;save_flags);</span><br><span class="line">    <span class="keyword">if</span> (error) &#123;</span><br><span class="line">        <span class="keyword">goto</span> error_already_set;</span><br><span class="line">    &#125;</span><br><span class="line">    netdev-&gt;changed_flags = <span class="number">0</span>;</span><br><span class="line">    fatal_signal_block();</span><br><span class="line">    list_push_back(&amp;netdev_list, &amp;netdev-&gt;node);</span><br><span class="line">    fatal_signal_unblock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Success! */</span></span><br><span class="line">    *netdev_ = netdev;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">error:</span><br><span class="line">    error = errno;</span><br><span class="line">error_already_set:</span><br><span class="line">    close(netdev_fd);</span><br><span class="line">    <span class="keyword">if</span> (tap_fd &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        close(tap_fd);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OpenFlow/" rel="tag"># OpenFlow</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/24/post6/" rel="next" title="OpenFlow1.0.0 带无线扩展的OF1.0协议代码详解———main">
+                <i class="fa fa-chevron-left"></i> OpenFlow1.0.0 带无线扩展的OF1.0协议代码详解———main
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Fantin" />
+          <p class="site-author-name" itemprop="name">Fantin</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/FantinYang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="yangfan.gm@gmail.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-e-mail"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/yangfantin" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/y526147723/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#add-port"><span class="nav-number">1.</span> <span class="nav-text">add_port</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dp-add-port"><span class="nav-number">2.</span> <span class="nav-text">dp_add_port</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-port"><span class="nav-number">3.</span> <span class="nav-text">new_port</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#do-open-netdev"><span class="nav-number">4.</span> <span class="nav-text">do_open_netdev</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#netdev-open"><span class="nav-number">4.1.</span> <span class="nav-text">netdev_open</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fantin</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
