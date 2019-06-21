@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="AP," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="这篇内容是关于AP的改造设计，该设计可分为AP网络扫描功能设计和AP数据传输设计。即AP扫描网络环境数据包，同时将网络数据通过CoAP协议上传。由此，AP可作为网络安全代理起，实时监控无线网络环境数据。 功能模块：  网络扫描功能  基于CoAP协议传输功能   AP网络环境扫描实现核心实现该功能模块参考AP开源应用iwcap，packet可在OpenWrt wiki上查询, github源代码。">
+<meta name="keywords" content="AP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于CoAP的AP无线网络数据传输设计">
+<meta property="og:url" content="https://fantinyang.github.io/2019/06/21/post8/index.html">
+<meta property="og:site_name" content="FantinOcean">
+<meta property="og:description" content="这篇内容是关于AP的改造设计，该设计可分为AP网络扫描功能设计和AP数据传输设计。即AP扫描网络环境数据包，同时将网络数据通过CoAP协议上传。由此，AP可作为网络安全代理起，实时监控无线网络环境数据。 功能模块：  网络扫描功能  基于CoAP协议传输功能   AP网络环境扫描实现核心实现该功能模块参考AP开源应用iwcap，packet可在OpenWrt wiki上查询, github源代码。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://fantinyang.github.io/2019/06/21/post8/coap1.png">
+<meta property="og:image" content="https://fantinyang.github.io/2019/06/21/post8/option1.png">
+<meta property="og:image" content="https://fantinyang.github.io/2019/06/21/post8/option2.png">
+<meta property="og:updated_time" content="2019-06-21T03:26:46.489Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于CoAP的AP无线网络数据传输设计">
+<meta name="twitter:description" content="这篇内容是关于AP的改造设计，该设计可分为AP网络扫描功能设计和AP数据传输设计。即AP扫描网络环境数据包，同时将网络数据通过CoAP协议上传。由此，AP可作为网络安全代理起，实时监控无线网络环境数据。 功能模块：  网络扫描功能  基于CoAP协议传输功能   AP网络环境扫描实现核心实现该功能模块参考AP开源应用iwcap，packet可在OpenWrt wiki上查询, github源代码。">
+<meta name="twitter:image" content="https://fantinyang.github.io/2019/06/21/post8/coap1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":true},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://fantinyang.github.io/2019/06/21/post8/"/>
+
+
+
+
+
+  <title>基于CoAP的AP无线网络数据传输设计 | FantinOcean</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FantinOcean</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fantinyang.github.io/2019/06/21/post8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fantin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FantinOcean">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于CoAP的AP无线网络数据传输设计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-21T11:15:13+08:00">
+                2019-06-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇内容是关于AP的改造设计，该设计可分为AP网络扫描功能设计和AP数据传输设计。即AP扫描网络环境数据包，同时将网络数据通过CoAP协议上传。由此，AP可作为网络安全代理起，实时监控无线网络环境数据。</p>
+<p>功能模块：</p>
+<ol>
+<li><p>网络扫描功能</p>
+</li>
+<li><p>基于CoAP协议传输功能</p>
+</li>
+</ol>
+<h2 id="AP网络环境扫描实现"><a href="#AP网络环境扫描实现" class="headerlink" title="AP网络环境扫描实现"></a>AP网络环境扫描实现</h2><h3 id="核心实现"><a href="#核心实现" class="headerlink" title="核心实现"></a>核心实现</h3><p>该功能模块参考AP开源应用iwcap，packet可在OpenWrt wiki上<a href="https://openwrt.org/packages/pkgdata/iwcap" target="_blank" rel="noopener">查询</a>, github<a href="https://github.com/openwrt/openwrt/tree/master/package/network/utils/iwcap" target="_blank" rel="noopener">源代码</a>。</p>
+<p>其核心实现是通过绑定本地无线网卡，建立socket通信通道，完成无线数据包抓取。</p>
+<p>具体实现代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">capture_sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); #简历socket通道</span><br><span class="line">bind(capture_sock, (struct sockaddr *)&amp;local, sizeof(local)); # 绑定网卡与通道</span><br><span class="line">pktlen = recvfrom(capture_sock, pktbuf, sizeof(pktbuf), 0, NULL, 0); #从通道抓包</span><br></pre></td></tr></table></figure>
+<h3 id="socket通信"><a href="#socket通信" class="headerlink" title="socket通信"></a>socket通信</h3><p> 在Unix/Linux系统中，为了统一对各硬件的操作，简化接口，不同硬件设备可以被看成一个文件，等同于对磁盘上普通文件的操作。</p>
+<p>用socket()函数创建一个网络连接，其返回值就是文件描述符。根据文件描述符，我们可以使用普通的文件操作来传输数据。</p>
+<p>相关函数：accept, bind, connect, listen…</p>
+<p>头文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>函数定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>参数domain指定使用何种地址类型，常见的包括：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">PF_UNIX/PF_LOCAL/AF_UNIX/AF_LOCAL UNIX #进程通信协议</span><br><span class="line">PF_INET?AF_INET Ipv4 #网络协议</span><br><span class="line">PF_INET6/AF_INET6 Ipv6 #网络协议</span><br><span class="line">PF_IPX/AF_IPX IPX-Novell #协议</span><br><span class="line">PF_NETLINK/AF_NETLINK #核心用户接口装置</span><br><span class="line">PF_X25/AF_X25 #ITU-T X<span class="number">.25</span>/ISO<span class="number">-8208</span> 协议</span><br><span class="line">PF_AX25/AF_AX25 #业余无线AX. <span class="number">25</span> 协议</span><br><span class="line">PF_ATMPVC/AF_ATMPVC #存取原始 ATM PVCs</span><br><span class="line">PF_APPLETALK/AF_APPLETALK <span class="meta">#appletalk (DDP)协议</span></span><br><span class="line">PF_PACKET/AF_PACKET #初级封包接口</span><br></pre></td></tr></table></figure>
+<p>参数type：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SOCK_STREAM #提供双向连续且可信赖的数据流, 即TCP. 支持 OOB 机制, 在所有数据传送前必须使用connect()来建立连线状态.</span><br><span class="line">SOCK_DGRAM #使用不连续不可信赖的数据包连接</span><br><span class="line">SOCK_SEQPACKET #提供连续可信赖的数据包连接</span><br><span class="line">SOCK_RAW #提供原始网络协议存取</span><br><span class="line">SOCK_RDM #提供可信赖的数据包连接</span><br><span class="line">SOCK_PACKET #提供和网络驱动程序直接通信. protocol 用来指定socket 所使用的传输协议编号, 通常此参考不用管它, 设为<span class="number">0</span> 即可.</span><br></pre></td></tr></table></figure>
+<p>在此应用中，协议指定从数据链路中接收分组。ETH_P_ALL定义于 /usr/include/linux/if_ether.h中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_ALL 0x0003</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_LOOP      0x0060          <span class="comment">/* Ethernet Loopback packet     */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_PUP       0x0200          <span class="comment">/* Xerox PUP packet             */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_PUPAT     0x0201          <span class="comment">/* Xerox PUP Addr Trans packet  */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_IP        0x0800          <span class="comment">/* Internet Protocol packet     */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_X25       0x0805          <span class="comment">/* CCITT X.25                   */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_ARP       0x0806          <span class="comment">/* Address Resolution packet    */</span>      </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_BPQ       0x08FF          <span class="comment">/* G8BPQ AX.25 Ethernet Packet  [ NOT AN</span></span></span><br><span class="line"><span class="meta"><span class="comment">#define ETH_P_IEEEPUP   0x0a00          /* Xerox IEEE802.3 PUP packet */</span>        </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ETH_P_IEEEPUPAT 0x0a01          <span class="comment">/* Xerox IEEE802.3 PUP Addr Trans packe[t*/</span></span></span><br></pre></td></tr></table></figure>
+<p><a href="[http://c.biancheng.net/cpp/html/376.html](http://c.biancheng.net/cpp/html/376.html">参考链接1</a>)</p>
+<p><a href="https://blog.csdn.net/baidu20008/article/details/10225073" target="_blank" rel="noopener">参考链接2</a></p>
+<h2 id="CoAP客户端-服务器在AP上的C语言实现"><a href="#CoAP客户端-服务器在AP上的C语言实现" class="headerlink" title="CoAP客户端/服务器在AP上的C语言实现"></a>CoAP客户端/服务器在AP上的C语言实现</h2><p>协议参考<a href="https://tools.ietf.org/html/rfc7252" target="_blank" rel="noopener">RFC7252</a></p>
+<p>CoAP以各种语言的具体实现均有版本，如有需要可以在<a href="https://my.oschina.net/RainyZou/blog/1605334" target="_blank" rel="noopener">此博客</a>查看。</p>
+<p>我在实现上参考了<a href="https://github.com/1248/microcoap" target="_blank" rel="noopener">microcoap</a>中的coap.c, coap.h 和 endpoint.h。</p>
+<h3 id="传输方案设计"><a href="#传输方案设计" class="headerlink" title="传输方案设计"></a>传输方案设计</h3><p>将CoAP客户端部署在AP上，CoAP服务器部署在云平台。</p>
+<p>CoAP client 主动向 Server发送CON消息，完成认证和连接。Server向Client发送ACK消息，消息option中存放”start” / “stop” 控制程序开始 / 结束。</p>
+<p>程序开始，AP抓取网络数据包，数据内容存放在CoAP数据包 payload中，并以NON类型上传至Server。具体传输过程如图：</p>
+<p>接下来简单介绍客户端和服务器代码实现的核心内容。</p>
+<h3 id="CoAP包结构"><a href="#CoAP包结构" class="headerlink" title="CoAP包结构"></a>CoAP包结构</h3><p>microcoap代码中的核心函数主要包括：coap_build、coap_parse、coap_handle_req 分别执行数据包构建、数据包解析和数据包回复的功能。熟悉CoAP协议的包结构后理解比较简单，下面主要介绍一下CoAP协议的包结构。</p>
+<p><img src="coap1.png" alt=""></p>
+<p>【Ver】 版本编号，指示CoAP协议的版本号。类似于HTTP 1.0 HTTP 1.1。版本编号占2位，取值为01B。</p>
+<p>【T】报文类型，CoAP协议定了4种不同形式的报文，CON报文，NON报文，ACK报文和RST报文。</p>
+<p>【TKL】CoAP标识符长度。CoAP协议中具有两种功能相似的标识符，一种为Message ID（报文编号），一种为Token（标识符）。其中每个报文均包含消息编号，但是标识符对于报文来说是非必须的。</p>
+<p>【Code】功能码/响应码。Code在CoAP请求报文和响应报文中具有不同的表现形式，Code占一个字节，它被分成了两部分，前3位一部分，后5位一部分，为了方便描述它被写成了c.dd结构。其中0.XX表示CoAP请求的某种方法，而2.XX、4.XX或5.XX则表示CoAP响应的某种具体表现。</p>
+<p>【Message ID】报文编号</p>
+<p>【Token】标识符具体内容，通过TKL指定Token长度。</p>
+<p>【Option】报文选项，通过报文选项可设定CoAP主机，CoAP URI，CoAP请求参数和负载媒体类型等等。</p>
+<p>【1111 1111B】CoAP报文和具体负载之间的分隔符。</p>
+<h4 id="Code部分"><a href="#Code部分" class="headerlink" title="Code部分"></a>Code部分</h4><p>Code部分被分成了两部分，为了便于阅读，Code被描述为c.dd形式。具体内容可参考RFC7252 #12.1.1 Method Codes</p>
+<h5 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h5><p>​    在CoAP请求中，Code被定义为CoAP请求方法，这些方法有GET、POST、PUT和DELETE，这些方法和HTTP协议非常相似。</p>
+<p>​    （0.01）GET方法——用于获得某资源</p>
+<p>​    （0.02）POST方法——用于创建某资源</p>
+<p>​    （0.03）PUT方法——用于更新某资源</p>
+<p>​    （0.04）DELETE方法——用于删除某资源</p>
+<h5 id="响应"><a href="#响应" class="headerlink" title="响应"></a>响应</h5><p>​    在CoAP响应中，Code被定义为CoAP响应码，类似于HTTP 200 OK等等。</p>
+<p>​    （2.01）Created</p>
+<p>​    （2.02）Deleted</p>
+<p>​    （2.03）Valid</p>
+<p>​    （2.04）Changed</p>
+<p>​    （2.05）Content。类似于HTTP 200 OK</p>
+<p>​    </p>
+<p>​    （4.00）Bad Request 请求错误，服务器无法处理。类似于HTTP 400。</p>
+<p>​    （4.01）Unauthorized 没有范围权限。类似于HTTP 401。</p>
+<p>​    （4.02）Bad Option 请求中包含错误选项。</p>
+<p>​    （4.03）Forbidden 服务器拒绝请求。类似于HTTP 403。</p>
+<p>​    （4.04）Not Found 服务器找不到资源。类似于HTTP 404。</p>
+<p>​    （4.05）Method Not Allowed 非法请求方法。类似于HTTP 405。</p>
+<p>​    （4.06）Not Acceptable 请求选项和服务器生成内容选项不一致。类似于HTTP 406。</p>
+<p>​    （4.12）Precondition Failed 请求参数不足。类似于HTTP 412。</p>
+<p>​    （4.15）Unsuppor Conten-Type 请求中的媒体类型不被支持。类似于HTTP 415。</p>
+<p>​    （5.00）Internal Server Error 服务器内部错误。类似于HTTP 500。</p>
+<p>​    （5.01）Not Implemented 服务器无法支持请求内容。类似于HTTP 501。</p>
+<p>​    （5.02）Bad Gateway 服务器作为网关时，收到了一个错误的响应。类似于HTTP 502。</p>
+<p>​    （5.03）Service Unavailable 服务器过载或者维护停机。类似于HTTP 503。</p>
+<p>​    （5.04）Gateway Timeout 服务器作为网关时，执行请求时发生超时错误。类似于HTTP 504。</p>
+<p>​    （5.05）Proxying Not Supported 服务器不支持代理功能。</p>
+<p>在程序中，code占8位，具体编程实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAKE_RSPCODE(clas, det)((clas &lt;&lt; 5) | det)</span></span><br><span class="line"></span><br><span class="line">COAP_RSPCODE_CONTENT = MAKE_RSPCODE(<span class="number">2</span>,<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="Option部分"><a href="#Option部分" class="headerlink" title="Option部分"></a>Option部分</h4><p>CoAP支持多个Option，CoAP的Option的表示方法比较特殊，采用增量的方式描述，细节可参考RFC7252 #3.1</p>
+<p><img src="option1.png" alt="option1"></p>
+<p> 一般情况下Option部分包含Option Delta、Option Length和Option Value三部分。</p>
+<p>​    【Option Delta】表示Option的增量，当前的Option的具体编号等于之前所有Option Delta的总和。</p>
+<p>​    【Option Length】表示Option Value的具体长度。</p>
+<p>​    【Option Value】表示Option具体内容</p>
+<p>​    CoAP中所有的Option都采用编号的方式，这些Option及编号的定义如下图所示。</p>
+<p><img src="option2.png" alt="option2"></p>
+<p> 在这些option中，Uri-Host、Uri-Port、Uri-Path和Uri-Query等和资源“位置”和参数有关。</p>
+<p>​    【3】Uri-Host:CoAP主机名称，例如iot.eclipse.org</p>
+<p>​    【7】Uri-Port:CoAP端口号，默认为5683</p>
+<p>​    【11】Uri-Path:资源路由或路径，例如\temperature。资源路径采用UTF8字符串形式，长度不计第一个”\”。</p>
+<p>​    【15】Uri-Query:访问资源参数，例如?value1=1&amp;value2=2，参数与参数之间使用“&amp;”分隔，Uri-Query和Uri-Path之间采用“?”分隔。</p>
+<p>​    在这些option中，Content-Format和Accept用于表示CoAP负载的媒体格式</p>
+<p>​    【12】Content-Format:指定CoAP复杂媒体类型，媒体类型采用整数描述，例如application/json对应整数50，application/octet-stream对应整数40。</p>
+<p>​    【17】Accept: 指定CoAP响应复杂中的媒体类型，媒体类型的定义和Content-Format相同。</p>
+<p>​    CoAP协议中支持多个Option，例如</p>
+<p>​    第一个Option Delta=11，表示该Option表示Uri-Path(11)</p>
+<p>​    第二个Option Delta=1，表示该Option=1+11，表示Content-Format(12)</p>
+<p>​    第三个Option Delta=3，表示该Option=3+1+11，表示Uri-Query(15)</p>
+<p>​    CoAP采用这样的方式表示多个Option，而每种Option都可以在HTTP协议中找到对应项。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/AP/" rel="tag"># AP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/24/post7/" rel="next" title="OpenFlow1.0.0 代码解读——add port">
+                <i class="fa fa-chevron-left"></i> OpenFlow1.0.0 代码解读——add port
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Fantin" />
+          <p class="site-author-name" itemprop="name">Fantin</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/FantinYang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="yangfan.gm@gmail.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-e-mail"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/yangfantin" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/y526147723/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AP网络环境扫描实现"><span class="nav-number">1.</span> <span class="nav-text">AP网络环境扫描实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#核心实现"><span class="nav-number">1.1.</span> <span class="nav-text">核心实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#socket通信"><span class="nav-number">1.2.</span> <span class="nav-text">socket通信</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CoAP客户端-服务器在AP上的C语言实现"><span class="nav-number">2.</span> <span class="nav-text">CoAP客户端/服务器在AP上的C语言实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传输方案设计"><span class="nav-number">2.1.</span> <span class="nav-text">传输方案设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CoAP包结构"><span class="nav-number">2.2.</span> <span class="nav-text">CoAP包结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Code部分"><span class="nav-number">2.2.1.</span> <span class="nav-text">Code部分</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#请求"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#响应"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">响应</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Option部分"><span class="nav-number">2.2.2.</span> <span class="nav-text">Option部分</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fantin</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
