@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="#live555取流与ffmpeg解码——从零开始 本片文章主要总结如何利用live555库取流，再使用ffmpeg库将H264解码为YUV420。将这个过程制作为一个demo。因为是第一次涉及视频流传输和解码，所以这种“从零开始”的开发过程可能比较适合新手。live555是一个基于RTP/RTSP等协议开源的视频流库。而ffmpeg更像是一个视频处理工具。 ##编译环境配置 ###live555">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DEMO--Live555取流与ffmpeg解码——从零开始">
+<meta property="og:url" content="https://fantinyang.github.io/2019/07/26/post9/index.html">
+<meta property="og:site_name" content="FantinOcean">
+<meta property="og:description" content="#live555取流与ffmpeg解码——从零开始 本片文章主要总结如何利用live555库取流，再使用ffmpeg库将H264解码为YUV420。将这个过程制作为一个demo。因为是第一次涉及视频流传输和解码，所以这种“从零开始”的开发过程可能比较适合新手。live555是一个基于RTP/RTSP等协议开源的视频流库。而ffmpeg更像是一个视频处理工具。 ##编译环境配置 ###live555">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-07-25T16:13:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DEMO--Live555取流与ffmpeg解码——从零开始">
+<meta name="twitter:description" content="#live555取流与ffmpeg解码——从零开始 本片文章主要总结如何利用live555库取流，再使用ffmpeg库将H264解码为YUV420。将这个过程制作为一个demo。因为是第一次涉及视频流传输和解码，所以这种“从零开始”的开发过程可能比较适合新手。live555是一个基于RTP/RTSP等协议开源的视频流库。而ffmpeg更像是一个视频处理工具。 ##编译环境配置 ###live555">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":true},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://fantinyang.github.io/2019/07/26/post9/"/>
+
+
+
+
+
+  <title>DEMO--Live555取流与ffmpeg解码——从零开始 | FantinOcean</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">FantinOcean</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Share</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fantinyang.github.io/2019/07/26/post9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Fantin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="FantinOcean">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DEMO--Live555取流与ffmpeg解码——从零开始</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-26T00:12:20+08:00">
+                2019-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>#live555取流与ffmpeg解码——从零开始</p>
+<p>本片文章主要总结如何利用live555库取流，再使用ffmpeg库将H264解码为YUV420。将这个过程制作为一个demo。因为是第一次涉及视频流传输和解码，所以这种“从零开始”的开发过程可能比较适合新手。<br><a href="http://www.live555.com/" target="_blank" rel="noopener">live555</a>是一个基于RTP/RTSP等协议开源的视频流库。而<a href="https://ffmpeg.org/" target="_blank" rel="noopener">ffmpeg</a>更像是一个视频处理工具。</p>
+<p>##编译环境配置</p>
+<p>###live555部分<br>live555的结构还是比较清晰的，如果需要开发一个客户端，主要关注“testProgs”和“testRtspClient”这两个文件夹即可，其中都给出了一些开发实例和源代码。<br>刚开始我以为client就是testRtspClient中的同名.cpp文件，后来发现，在testProgs文件夹中的 testRTSPClient.cpp 才更适合开发。<br>所以我复制了 testRTSPClient.cpp 的代码，放在自己的demo中，把他改名为client.cpp 进行二次开发。</p>
+<p>Makefile可以直接参考testRtspClient文件夹中的Makefile，基本是testProgs的缩简版。<br>可以先从Makefile分析一下编译构成。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">INCLUDES = -I../UsageEnvironment/<span class="keyword">include</span> -I../groupsock/<span class="keyword">include</span> -I../liveMedia/<span class="keyword">include</span> -I../BasicUsageEnvironment/<span class="keyword">include</span> -I../openRTSP/<span class="keyword">include</span></span><br><span class="line"></span><br><span class="line">TEST_RTSP_CLIENT_OBJS    = testRtspClient.<span class="variable">$(OBJ)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">USAGE_ENVIRONMENT_DIR = ../UsageEnvironment</span><br><span class="line">USAGE_ENVIRONMENT_LIB = <span class="variable">$(USAGE_ENVIRONMENT_DIR)</span>/libUsageEnvironment.<span class="variable">$(libUsageEnvironment_LIB_SUFFIX)</span></span><br><span class="line">BASIC_USAGE_ENVIRONMENT_DIR = ../BasicUsageEnvironment</span><br><span class="line">BASIC_USAGE_ENVIRONMENT_LIB = <span class="variable">$(BASIC_USAGE_ENVIRONMENT_DIR)</span>/libBasicUsageEnvironment.<span class="variable">$(libBasicUsageEnvironment_LIB_SUFFIX)</span></span><br><span class="line">LIVEMEDIA_DIR = ../liveMedia</span><br><span class="line">LIVEMEDIA_LIB = <span class="variable">$(LIVEMEDIA_DIR)</span>/libliveMedia.<span class="variable">$(libliveMedia_LIB_SUFFIX)</span></span><br><span class="line">GROUPSOCK_DIR = ../groupsock</span><br><span class="line">GROUPSOCK_LIB = <span class="variable">$(GROUPSOCK_DIR)</span>/libgroupsock.<span class="variable">$(libgroupsock_LIB_SUFFIX)</span></span><br><span class="line">OPENRTSP_DIR = ../openRTSP</span><br><span class="line">OPENRTSP_LIB = <span class="variable">$(OPENRTSP_DIR)</span>/libRtspClient.<span class="variable">$(libopenrtsp_LIB_SUFFIX)</span></span><br><span class="line">LOCAL_LIBS =	<span class="variable">$(OPENRTSP_LIB)</span> <span class="variable">$(LIVEMEDIA_LIB)</span> <span class="variable">$(GROUPSOCK_LIB)</span> \</span><br><span class="line">        <span class="variable">$(BASIC_USAGE_ENVIRONMENT_LIB)</span> <span class="variable">$(USAGE_ENVIRONMENT_LIB)</span></span><br><span class="line">LIBS =			<span class="variable">$(LOCAL_LIBS)</span> <span class="variable">$(LIBS_FOR_CONSOLE_APPLICATION)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="section">testRTSPClient$(EXE):	<span class="variable">$(TEST_RTSP_CLIENT_OBJS)</span> <span class="variable">$(LOCAL_LIBS)</span></span></span><br><span class="line">    <span class="variable">$(LINK)</span><span class="variable">$@</span> <span class="variable">$(CONSOLE_LINK_OPTS)</span> <span class="variable">$(TEST_RTSP_CLIENT_OBJS)</span> <span class="variable">$(LIBS)</span> -lpthread</span><br></pre></td></tr></table></figure>
+<p>可以看到动态库就是UsageEnvironment，BasicUsageEnvironment，liveMedia，groupsock和openRTSP。所以写demo的时候需要把这几个文件夹中的include和.a文件包含进来。<br>文件结构：<br>.<br>├── BasicUsageEnvironment<br>│   ├── include<br>│   └── libBasicUsageEnvironment.a<br>├── groupsock<br>│   ├── include<br>│   └── libgroupsock.a<br>├── liveMedia<br>│   ├── include<br>│   └── libliveMedia.a<br>├── openRTSP<br>│   ├── include<br>│   └── libRtspClient.a<br>└── UsageEnvironment<br>    ├── include<br>    └── libUsageEnvironment.a</p>
+<p>这样就完成了live555的环境配置。</p>
+<p>###ffmpeg部分<br>ffmpeg就没这么简单了，ffmpeg的库很多，互相依赖复杂。因为这个demo中只需要将h264解码为YUV420，所以理论上只需要用到libavformat、libavcodec、libavutil这三个库。但实际上，我最后还加上了libswresample，一共四个库。<br>在网上下好源码包之后，应该先在文件夹下执行<br>        <code>./configure</code><br>        <code>make</code><br>        <code>make install</code><br>确保几个库中都编译好动态库，方便直接拷贝引用。<br>我的方式是直接复制上诉4个文件夹在demo文件夹中，文件夹除了包含头文件还应该包含动态库。</p>
+<p>###Makefile修改<br>整个demo的文件结构是这样的：<br>.<br>├── libavcodec<br>├── libavformat<br>├── libavutil<br>├── libswresample<br>├── live<br>├── client.cpp</p>
+<p>live中是上述live555的库，client.cpp 是主函数。</p>
+<p>因为ffmepg的头文件引用都是使用 <code>#include &lt;libavcodec/avcodec.h&gt;</code>这样的方式引用，所以我把主函数和几个库文件夹放在同一个根目录下。<br>live555通过<code>#include &quot;liveMedia.hh&quot;</code>引用。所以live555需要分别添加库的文件地址，而ffmpeg只需要添加根地址。</p>
+<p>Makefile在上述testRTSPClient的Makefile中修改。</p>
+<ol>
+<li>INCLUDES 中添加ffmpeg几个库的根地址。<br>   这里的根地址就是当前地址。<br>   在原来的INCLUDES 后面添加  <code>-I./</code> 即可。</li>
+<li>live库的引用则需要在原来的基础上加上live/。需要注意的是，还是因为目录结构的不同，原版Makefile的INCLUDES 后面有两个.. ，在我的目录结构下，只需要一个。大家要根据自己的结构修改。</li>
+<li>最终版本：<br>  <code>INCLUDES = -I./live/UsageEnvironment/include -I./live/groupsock/include -I./live/liveMedia/include -I./live/BasicUsageEnvironment/include -I./live/openRTSP/include -I./</code></li>
+</ol>
+<p>除了-I的修改，还有链接库需要修改。<br>我按照live555的写法，把ffmpeg的链接库添加在后面，具体是：<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">LIBAVCODEC_DIR = ./libavcodec</span><br><span class="line">LIBAVCODEC_LIB = <span class="variable">$(LIBAVCODEC_DIR)</span>/libavcodec.<span class="variable">$(LIB_SUFFIX)</span></span><br><span class="line">LIBAVUTIL_DIR = ./libavutil</span><br><span class="line">LIBAVUTIL_LIB = <span class="variable">$(LIBAVUTIL_DIR)</span>/libavutil.<span class="variable">$(LIB_SUFFIX)</span></span><br><span class="line">LIBAVFORMAT_DIR = ./libavformat</span><br><span class="line">LIBAVFORMAT_LIB = <span class="variable">$(LIBAVFORMAT_DIR)</span>/libavformat.<span class="variable">$(LIB_SUFFIX)</span></span><br><span class="line">LIBSWRESAMPLE_DIR = ./libswresample</span><br><span class="line">LIBSWRESAMPLE_LIB = <span class="variable">$(LIBSWRESAMPLE_DIR)</span>/libswresample.<span class="variable">$(LIB_SUFFIX)</span></span><br><span class="line"></span><br><span class="line">LOCAL_LIBS =	<span class="variable">$(OPENRTSP_LIB)</span> <span class="variable">$(LIVEMEDIA_LIB)</span> <span class="variable">$(GROUPSOCK_LIB)</span> \</span><br><span class="line">        <span class="variable">$(BASIC_USAGE_ENVIRONMENT_LIB)</span> <span class="variable">$(USAGE_ENVIRONMENT_LIB)</span>\</span><br><span class="line">        <span class="variable">$(LIBAVCODEC_LIB)</span> <span class="variable">$(LIBAVFORMAT_LIB)</span> <span class="variable">$(LIBAVUTIL_LIB)</span> <span class="variable">$(LIBSWRESAMPLE_LIB)</span></span><br></pre></td></tr></table></figure></p>
+<p>基本就是加上lib地址，然后在local_libs里面添加就可以。</p>
+<p>这样，demo的环境就搭好了，可以修改代码，然后make编译。</p>
+<p>##代码修改</p>
+<p>###live555解读<br>live555的代码读起来真的是新手不友好，但是修改起来还是方便的。<br>找到main函数，首先初始化环境env<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TaskScheduler* scheduler = BasicTaskScheduler::createNew();</span><br><span class="line">UsageEnvironment* env = BasicUsageEnvironment::createNew(*scheduler);</span><br></pre></td></tr></table></figure></p>
+<p>调用OpenUrl函数打开url（rtsp://摄像头的ip, 而且url是支持用户名密码认证的：rtsp://admin:password@ip）<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= argc<span class="number">-1</span>; ++i) &#123;</span><br><span class="line">openURL(*env, argv[<span class="number">0</span>], argv[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后就开始循环执行env下的task。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env-&gt;taskScheduler().doEventLoop(&amp;eventLoopWatchVariable);</span><br></pre></td></tr></table></figure></p>
+<p>task包括什么，基本就是所有调用了<code>UsageEnvironment* env</code>的函数。<br>因为我们的目的是通过live收到一帧视频并解码，所以可以不关注连接建立的过程，主要关注收到视频帧部分的操作。</p>
+<p>这里有一个类比较重要：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DummySink* <span class="title">createNew</span><span class="params">(UsageEnvironment&amp; env,</span></span></span><br><span class="line"><span class="function"><span class="params">                MediaSubsession&amp; subsession, <span class="comment">// identifies the kind of data that's being received</span></span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">char</span> <span class="keyword">const</span>* streamId = <span class="literal">NULL</span>)</span></span>; <span class="comment">// identifies the stream itself (optional)</span></span><br></pre></td></tr></table></figure></p>
+<p>他相当于提供一个池子，接受视频帧。子函数包括：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DummySink* DummySink::createNew(UsageEnvironment&amp; env, MediaSubsession&amp; subsession, <span class="keyword">char</span> <span class="keyword">const</span>* streamId) </span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> DummySink::afterGettingFrame(<span class="keyword">void</span>* clientData, <span class="keyword">unsigned</span> frameSize, <span class="keyword">unsigned</span> numTruncatedBytes,</span><br><span class="line">                struct timeval presentationTime, <span class="keyword">unsigned</span> durationInMicroseconds)</span><br><span class="line"></span><br><span class="line">Boolean DummySink::continuePlaying()</span><br></pre></td></tr></table></figure></p>
+<p>分别是构造——处理——继续的过程。</p>
+<p>如果我们需要对视频帧处理，直接将处理函数加在<code>afterGettingFrame</code>函数末尾，<code>continuePlaying()</code>前面即可。</p>
+<p>###H264 与 sps pps帧</p>
+<p>live555接受到的是H264的裸流，要获取h264格式，需要在原始数据的高为加包头。而原始数据保存在DummySink的成员函数fReceiveBuffer中，大小保存在freamesize里。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span> *SaveData = <span class="keyword">new</span> <span class="keyword">unsigned</span> <span class="keyword">char</span>[DUMMY_SINK_RECEIVE_BUFFER_SIZE + <span class="number">4</span>];</span><br><span class="line"><span class="keyword">char</span> head[<span class="number">4</span>] = &#123;<span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x01</span>&#125;;</span><br><span class="line"><span class="built_in">memcpy</span>(SaveData, head, <span class="number">4</span>);</span><br><span class="line"><span class="built_in">memcpy</span>(SaveData+<span class="number">4</span>, fReceiveBuffer,frameSize);</span><br></pre></td></tr></table></figure>
+<p>DUMMY_SINK_RECEIVE_BUFFER_SIZE根据摄像头数据定义，可以定义大一些。</p>
+<p><code>#define DUMMY_SINK_RECEIVE_BUFFER_SIZE 409600</code></p>
+<p>解码为YUV420需要依赖sps和pps帧，在live中，这两帧分别以数组形式保存在SPropRecord中，通过下面的代码将他们取出来。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> SPropRecords = <span class="number">-1</span>;</span><br><span class="line">SPropRecord *p_record = parseSPropParameterSets(fSubsession.fmtp_spropparametersets(), SPropRecords);</span><br><span class="line">    <span class="comment">//sps pps 以数组的形式保存SPropRecord中</span></span><br><span class="line">SPropRecord &amp;sps = p_record[<span class="number">0</span>];</span><br><span class="line">SPropRecord &amp;pps = p_record[<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+<p>这样，我们就获得了h264包和sps pps帧数据。</p>
+<p>###ffmpeg调用</p>
+<p>我将解码部分代码写在decodeyuv()函数中。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">decoderyuv</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> * inbuf, <span class="keyword">int</span> read_size, SPropRecord &amp;sps, SPropRecord &amp;pps)</span></span></span><br><span class="line"><span class="function"></span>&#123;   &#125;</span><br></pre></td></tr></table></figure>
+<p>h264包、包大小、sps和pps帧作为函数输入。</p>
+<p>首先，需要对解码器初始化。但是考虑到解码过程中是收到一帧解码一帧，但对解码器的初始化只需要做一次，否则会丢失sps和pps帧和其他环境变量的依赖。</p>
+<p><strong>所以，我将以下初始化代码放在主函数中，将变量作为全局变量声明。</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">AVCodec *codec;</span><br><span class="line">AVCodecContext *c = <span class="literal">NULL</span>;</span><br><span class="line">AVFrame *frame;</span><br><span class="line">AVCodecParserContext *avParserContext;</span><br><span class="line"></span><br><span class="line">avcodec_register_all();</span><br><span class="line">codec = avcodec_find_decoder(AV_CODEC_ID_H264);</span><br><span class="line"><span class="keyword">if</span>( <span class="literal">NULL</span> == codec )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Codec not found\n"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">c = avcodec_alloc_context3(codec);</span><br><span class="line"><span class="keyword">if</span>(<span class="literal">NULL</span> == c)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Could not allocate video codec context\n"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">avParserContext = av_parser_init(AV_CODEC_ID_H264);</span><br><span class="line"><span class="keyword">if</span>( <span class="literal">NULL</span> == avParserContext)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Could not init avParserContext\n"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(avcodec_open2(c,codec, <span class="literal">NULL</span>) &lt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Could not open codec\n"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">frame = av_frame_alloc();</span><br><span class="line"><span class="keyword">if</span>(<span class="literal">NULL</span> == frame)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Could not allocate video frame\n"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下是decodeyuv函数代码。</p>
+<ul>
+<li>首先将sps和pps帧添加到context的 extradata中。</li>
+<li>然后将extradata（sps 和pps帧数据）添加到h264数据前，重构buffer。</li>
+<li>使用解码器解码，解码后的数据将存储在frame-&gt;data中，而got_frame变量记录了解码数据大小。</li>
+<li>将解码后的YUV数据存储到文件。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">decoderyuv</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> * inbuf, <span class="keyword">int</span> read_size, SPropRecord &amp;sps, SPropRecord &amp;pps)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> got_frame;</span><br><span class="line">    <span class="keyword">if</span>(c-&gt;extradata == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> totalsize = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span>* tmp = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> nalu_header[<span class="number">4</span>] = &#123;<span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x01</span>&#125;;</span><br><span class="line">        totalsize = <span class="number">8</span> + sps.sPropLength + pps.sPropLength;</span><br><span class="line">        <span class="comment">//在每个sps 和pps 之前加上startcode </span></span><br><span class="line">        tmp = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">realloc</span>(tmp, totalsize);</span><br><span class="line">        <span class="built_in">memcpy</span>(tmp, nalu_header, <span class="number">4</span>);</span><br><span class="line">        <span class="built_in">memcpy</span>(tmp + <span class="number">4</span>, sps.sPropBytes, sps.sPropLength);</span><br><span class="line">        <span class="built_in">memcpy</span>(tmp + <span class="number">4</span> + sps.sPropLength, nalu_header, <span class="number">4</span>);</span><br><span class="line">        <span class="built_in">memcpy</span>(tmp + <span class="number">4</span> + sps.sPropLength + <span class="number">4</span>, pps.sPropBytes, pps.sPropLength);</span><br><span class="line">        <span class="comment">//printf("sps len:%d, pps len:%d\n", sps.sPropLength, pps.sPropLength);</span></span><br><span class="line">        <span class="comment">//将 sps 和pps 的数据给ffmpeg的h264解码器上下文</span></span><br><span class="line">        c-&gt;extradata_size = totalsize;</span><br><span class="line">        c-&gt;extradata = tmp;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//重构buf</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> * poutbuf = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(INBUF_SIZE*<span class="number">2</span> + AV_INPUT_BUFFER_PADDING_SIZE);</span><br><span class="line">    <span class="keyword">int</span> buf_size = read_size + c-&gt;extradata_size;</span><br><span class="line">    <span class="built_in">memcpy</span>(poutbuf, c-&gt;extradata, c-&gt;extradata_size);</span><br><span class="line">    <span class="built_in">memcpy</span>(poutbuf + c-&gt;extradata_size, inbuf, read_size);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//解码器解码</span></span><br><span class="line">    AVPacket avpkt = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    av_init_packet(&amp;avpkt);</span><br><span class="line">    avpkt.data = poutbuf;</span><br><span class="line">    avpkt.size = read_size + c-&gt;extradata_size;</span><br><span class="line">    <span class="keyword">time_t</span> start ,end;</span><br><span class="line">    start = clock();</span><br><span class="line">    <span class="keyword">int</span> decode_len = avcodec_decode_video2(c,frame, &amp;got_frame, &amp;avpkt);</span><br><span class="line">    end = clock();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"decoded frame used %d\n"</span>,end - start);</span><br><span class="line">    <span class="keyword">if</span>(decode_len &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Error while decoding frame \n"</span>);</span><br><span class="line">    <span class="keyword">if</span>(got_frame)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> width = frame-&gt;width;</span><br><span class="line">        <span class="keyword">int</span> height = frame-&gt;height;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"decode success\n"</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"width:%d, height:%d\n"</span>, frame-&gt;width, frame-&gt;height);</span><br><span class="line">        <span class="keyword">if</span>( savefile)</span><br><span class="line">        &#123;</span><br><span class="line">        yuv_fp = fopen(filename, <span class="string">"a+b"</span>);</span><br><span class="line">        解码后，存储的文件</span><br><span class="line">        <span class="keyword">if</span>(<span class="literal">NULL</span> == yuv_fp)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,<span class="string">"Open file failed\n"</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span>* yuv_buf = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(width * height *<span class="number">1.5</span>);<span class="comment">//可以放在while循环外面，这样就不用每次都申请，释放了</span></span><br><span class="line">        <span class="comment">//unsigned char* outbuff = (unsigned char*)malloc(width * height *1.5);</span></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//把解码出来的数据存成YUV数据，方便验证解码是否正确</span></span><br><span class="line">        <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; height; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">memcpy</span>(yuv_buf + width * i, frame-&gt;data[<span class="number">0</span>] + frame-&gt;linesize[<span class="number">0</span>]*i, width);</span><br><span class="line">            <span class="keyword">if</span>(i &lt; height &gt;&gt; <span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">memcpy</span>(yuv_buf + width * height + width *i / <span class="number">2</span>, frame-&gt;data[<span class="number">1</span>] + frame-&gt;linesize[<span class="number">1</span>]*i, width / <span class="number">2</span>);</span><br><span class="line">                <span class="built_in">memcpy</span>(yuv_buf + width * height * <span class="number">5</span> /<span class="number">4</span> + width * i / <span class="number">2</span> ,frame-&gt;data[<span class="number">2</span>] + frame-&gt;linesize[<span class="number">2</span>]*i, width / <span class="number">2</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        fwrite(yuv_buf, <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>),width * height * <span class="number">1.5</span> ,yuv_fp);</span><br><span class="line">        <span class="built_in">free</span>(yuv_buf);</span><br><span class="line">        fclose(yuv_fp);</span><br><span class="line">        yuv_fp = <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">free</span>(poutbuf);</span><br><span class="line">    <span class="comment">//记得释放变量的空间</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，就可以完成一个从live555取流，用ffmpeg解码为YUV，再将视频存储的demo。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/21/post8/" rel="next" title="基于CoAP的AP无线网络数据传输设计">
+                <i class="fa fa-chevron-left"></i> 基于CoAP的AP无线网络数据传输设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Fantin" />
+          <p class="site-author-name" itemprop="name">Fantin</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/FantinYang" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="yangfan.gm@gmail.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-e-mail"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/yangfantin" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/y526147723/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Fantin</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
